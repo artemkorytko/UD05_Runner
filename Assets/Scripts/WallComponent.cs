@@ -4,6 +4,5 @@ namespace Runner
 {
     public class WallComponent : MonoBehaviour
     {
-        
     }
 }
