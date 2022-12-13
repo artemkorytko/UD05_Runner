@@ -13,13 +13,13 @@ namespace Runner
 
     public class PlayerController : MonoBehaviour
     {
-        [SerializeField] private float forwardspeed;
+        [SerializeField] private float forwardspeed; //скорость для Move
         [SerializeField] private float roadWidth;
         [SerializeField] private float turnRotationAngle = 30f;
         [SerializeField] private float lerpSpeed = 5f;
         [SerializeField] private Transform model;
 
-        private Rigidbody _rigidbody;
+        private Rigidbody _rigidbody; // ссылка на ригибоди ДЛЯ ДВИЖЕНИЯ!
         private Animator _animator; //дочерний от вьюшки
         private InputHandler _inputHandler;
 
@@ -63,13 +63,13 @@ namespace Runner
             _rigidbody = GetComponent<Rigidbody>();
         }
 
-        // гдето тут ретурн дописать!!!!!
-
-        private void FixedUpdate()
+        
+        // ----------- чтобы двигаться --------------------------------------------------------------------------
+        private void FixedUpdate() // не зависит от частоты кадров, вызывается до update
         {
             if (!_isActive)
                 return;
-            Move();
+            Move(); 
         }
 
 
@@ -77,26 +77,29 @@ namespace Runner
         {
             var xOffset = -_inputHandler.HorizontalAxis * roadWidth; // минус - это то же что домножить на -1
 
-            var position = _rigidbody.position;
+            var position = _rigidbody.position; // получаем позицию у ригибоди чувачка
             position.x += xOffset;
             
-            // всегда сначала повороты потом движение!!!!!
-            //берем углы модели
+            // ПРАВИЛО всегда сначала повороты потом движение!!!!!
+            // берем углы модели
             var rotation = model.localRotation.eulerAngles;
             
             // ноль - положительное число
             rotation.y = Mathf.LerpAngle(rotation.y, xOffset == 0? 0 :Mathf.Sign(xOffset) * turnRotationAngle, lerpSpeed * Time.deltaTime);
             model.localRotation = Quaternion.Euler(rotation);
             
+            // !! обратились к найденному у игрока КОМПОНЕНТУ ригибоди
             // forward - направление
             // вторые скобки шоб плавающая точка не мешала умножать
             _rigidbody.MovePosition(position + transform.forward * (forwardspeed * Time.deltaTime));
+            // -------------------- что было +       вектор       * скорость
         }
 
 
 
-
-        private void OnTriggerEnter(Collider other)
+        // ------- ТРИГГЕР ------ без столкноваения -------------------------------------------------------------------
+        // ------- для триггера (не пнет чела, но сработает) --- надо шоб был ригибади
+        private void OnTriggerEnter(Collider other) // че за other? ещё нету его вроде
         {
             if (other.gameObject)
             {
@@ -105,16 +108,15 @@ namespace Runner
         }
 
 
-        // ----------- стандартный метод от коллижен ----- не 2D! (2D - OnCOllisionEnter2D) ------- 
-        // ------ а вот для триггера (не пнет чела, но сработает) --- надо шоб был ригибади
+        // ----------- КОЛЛИЖН --------------стандартный метод ----- не 2D! (2D - OnCOllisionEnter2D) ------------------ 
         // -- если у ригибади есть дочерний коллайдер - тоже вызовет событие (доп коллайдер на меч, а ригибади у чувака)
-        private void OnCollisionEnter(Collision collision) // возвращ то с кем сколлизились
+        private void OnCollisionEnter(Collision collision) // возвращает объект, с котопым сколлизились
         {
-            // правильно делать проверку на наличие компонента
-
-            // в больших пишут всегда var
-            // вернет true если компонент удалось получить, фалс если не удалось
-            // дописать одно
+            // правильнее всего делать проверку на наличие КОМПОНЕНТА на том, с чем столкнулись
+            // компоненты только для детекта, там пусто
+            
+            // вернет TRUE если компонент удалось получить, FALSE если не удалось
+            // тут не заводили ссылку а сразу получили компонент с объекта
             if (collision.gameObject.GetComponent<WallComponent>())
             {
                 Died();
@@ -124,12 +126,11 @@ namespace Runner
             if (collision.gameObject.GetComponent<WInCubeComponent>())
             {
                 Finish();
-                Dobezal?.Invoke(); 
-
+                Dobezal?.Invoke();
             }
             
-
-            Debug.Log("Collision Enter"); // еще три есть
+            
+            Debug.Log("Collision Enter"); // всего есть три типа, оставаться и выйти из коллизии 
         }
 
         
