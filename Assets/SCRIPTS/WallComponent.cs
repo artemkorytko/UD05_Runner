@@ -5,9 +5,9 @@ namespace Runner
 {
     public class WallComponent : MonoBehaviour
     {
-        private void Start() // а на какой метод оно срабатывает?
+        private void Start() // 
         {
-            Debug.Log ( "Добежал! Добежал!" );
+           // Debug.Log ( "Добежал! Добежал!" );
         }
 
         

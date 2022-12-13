@@ -6,6 +6,7 @@ using UnityEngine;
 
 
 // ------- скрипт на все такие проекты где пальцем свайп
+// ------- добавить скрипт компонентом на персонажа
 namespace Runner
 {
 
@@ -33,7 +34,7 @@ namespace Runner
                 _isHold = true; //Input.GetTouch(0).phase // ПОЧИТАТЬ!!!!!!!!!!!!!! там дофига нужного
                 _prevPosX = Input.mousePosition.x;
                 
-             }
+            }
             
             
             if (Input.GetMouseButtonUp(0)) // --- 0 - левая кнопка или первый тач!!! 1- правая, 2 - колесо

@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using Runner;
-using UnityEditor.iOS;
+//using UnityEditor.iOS;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -25,25 +25,28 @@ namespace Runner
 
         public event Action Dobezal; 
 
-        // флаг про то что изменилось состояние
-
-        // привате можно не писать, они и так по умолчанию...
+        // флаг про то что изменилось состояние активности
+        // приват можно не писать, они и так по умолчанию...
         public bool _isActive;
-        private static readonly int Run = Animator.StringToHash("Run"); //на старте хешируем
+        
+        // эти штуки райдер пишет автоматически поругавшись на "" в коде
+        // строковые значения надо хешировать, также чтобы каждый раз оно не хешировало пока выполняет колд
+        private static readonly int Run = Animator.StringToHash("Run"); // на старте хешируем
         private static readonly int Dance = Animator.StringToHash("Dance");
         private static readonly int Fall = Animator.StringToHash("Fall");
 
+        // чтобы понимать, что этот флаг меняется - нужен геттер и сеттер :/ - это я хреново понимаю
         public bool IsActive
         {
-            get => _isActive;
+            get => _isActive; //возвращает
             
-            set
+            set //делает логику
             {
                 _isActive = value;
 
                 if (_isActive) //true
                 {
-                    _animator.SetTrigger(Run); //alt enter - hash
+                    _animator.SetTrigger(Run); //alt enter - hash <----- передали название триггера (в аниматоре +)
                 }
             }
         }
@@ -102,8 +105,8 @@ namespace Runner
         }
 
 
-        // ----------- стандартный метод от коллижен 
-        // ------ а вот для триггера (не пнет но сработает)--- надо шоб был ригибади
+        // ----------- стандартный метод от коллижен ----- не 2D! (2D - OnCOllisionEnter2D) ------- 
+        // ------ а вот для триггера (не пнет чела, но сработает) --- надо шоб был ригибади
         // -- если у ригибади есть дочерний коллайдер - тоже вызовет событие (доп коллайдер на меч, а ригибади у чувака)
         private void OnCollisionEnter(Collision collision) // возвращ то с кем сколлизились
         {
@@ -135,9 +138,10 @@ namespace Runner
         
         
         
+        //------------------ методы в которых меняется анимация чувачка ------------------
         
-        
-        [ContextMenu("Died")] // это вылезет правой кнопкой из скрипта в инспекторе
+        [ContextMenu("Died")] // это вылезет правой кнопкой из скрипта в инспекторе - для дебагов метода 
+        //дабы проверить что метод работает
         private void Died()
         {
             _isActive = false;

@@ -4,5 +4,8 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/greenplayer.unity
+    guid: e98a37a0ec954446c92280d3b12a0131
   m_configObjects: {}

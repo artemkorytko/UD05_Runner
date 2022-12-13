@@ -12,13 +12,15 @@ namespace Runner
         void Awake()
         {
             _winparticles = GetComponentInChildren<ParticleSystem>();
+            
+            _playerControllerFile = FindObjectOfType<PlayerController>();//вечно это забываю ((((
             _playerControllerFile.Dobezal += StartWinParticlesBurst;
         }
 
         void StartWinParticlesBurst()
         {
             Debug.Log("добежал то");
-            _winparticles.Play();
+            _winparticles.Play(); // 
         }
     }
 }
