@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Runner
 {
@@ -10,8 +9,11 @@ namespace Runner
         private float _relativeOffset;
         
         private int _screenWidth;
-
+        
         public float HorizontalAxis => _relativeOffset;
+
+        public bool IsHold => _isHold;
+        
         private void Awake()
         {
             _screenWidth = Screen.width;
@@ -34,7 +36,7 @@ namespace Runner
             if (_isHold)
             {
                 var mousePos = Input.mousePosition.x;
-                var offset  = _prevPosX - Input.mousePosition.x;
+                var offset  = _prevPosX - mousePos;
                 _relativeOffset = offset / _screenWidth;
                 _prevPosX = mousePos;
 

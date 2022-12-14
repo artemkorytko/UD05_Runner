@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &48753252251547059
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 48753252251547057}
+  - component: {fileID: 48753252251547056}
+  m_Layer: 0
+  m_Name: Level
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &48753252251547057
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 48753252251547059}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &48753252251547056
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 48753252251547059}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 543fdeb75f8449b7ad7611b99be85c63, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  roadPartPrefab: {fileID: 1797583673695621824, guid: 26f3ff0dc5db3d046a69d31bafa0e80f, type: 3}
+  playerPrefab: {fileID: 3003362710697883551, guid: b5b4af52d27376e418163cc47bdb13d4, type: 3}
+  finishPrefab: {fileID: 1797583673695621824, guid: cd8ef2ffe9c6a754c9a8624755439345, type: 3}
+  wallPrefab: {fileID: 7086042813909327224, guid: 73d2e5bb05371e94abdf385754e1bab2, type: 3}
+  roadPartCount: 10
+  roadPartLenght: 5
+  roadPartWidth: 6
+  minWallOffset: 3
+  maxWallOffset: 3
