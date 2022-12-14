@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 namespace Runner
@@ -12,6 +11,8 @@ namespace Runner
         private int _screenWidth;
 
         public float HorizontalAxis => _relativeOffset;
+
+        public bool IsHold => _isHold;
 
         private void Awake()
         {

@@ -6,6 +6,7 @@ namespace Runner
     public class PlayerController : MonoBehaviour
     {
         [SerializeField] private float forwardSpeed = 5f;
+        [SerializeField] private float sideSpeed = 5f;
         [SerializeField] private float roadWidth = 5f;
         [SerializeField] private float turnRotationAngle = 30f;
         [SerializeField] private float lerpSpeed = 5f;
@@ -19,6 +20,9 @@ namespace Runner
         private static readonly int Run = Animator.StringToHash("Run");
         private static readonly int Fall = Animator.StringToHash("Fall");
         private static readonly int Dance = Animator.StringToHash("Dance");
+
+        public event Action OnWin;
+        public event Action OnDead;
 
         public bool IsActive
         {
@@ -41,11 +45,6 @@ namespace Runner
             _rigidbody = GetComponent<Rigidbody>();
         }
 
-        private void Start()
-        {
-            IsActive = true;
-        }
-
         private void FixedUpdate()
         {
             if (!IsActive)
@@ -55,12 +54,13 @@ namespace Runner
 
         private void Move()
         {
-            var xOffset = -_inputHandler.HorizontalAxis * roadWidth;
+            var xOffset = -_inputHandler.HorizontalAxis * sideSpeed;
             var position = _rigidbody.position;
             position.x += xOffset;
+            position.x = Mathf.Clamp(position.x, -roadWidth * 0.5f, roadWidth * 0.5f);
 
             var rotation = model.localRotation.eulerAngles;
-            rotation.y = Mathf.LerpAngle(rotation.y, xOffset == 0 ? 0 : Mathf.Sign(xOffset) * turnRotationAngle, lerpSpeed * Time.deltaTime);
+            rotation.y = Mathf.LerpAngle(rotation.y, _inputHandler.IsHold ? Mathf.Sign(xOffset) * turnRotationAngle : 0, lerpSpeed * Time.deltaTime);
             model.localRotation = Quaternion.Euler(rotation);
 
             _rigidbody.MovePosition(position + transform.forward * (forwardSpeed * Time.deltaTime));
@@ -87,6 +87,7 @@ namespace Runner
         {
             IsActive = false;
             _animator.SetTrigger(Fall);
+            OnDead?.Invoke();
         }
 
         [ContextMenu("Finish")]
@@ -94,6 +95,7 @@ namespace Runner
         {
             IsActive = false;
             _animator.SetTrigger(Dance);
+            OnWin?.Invoke();
         }
     }
 }
