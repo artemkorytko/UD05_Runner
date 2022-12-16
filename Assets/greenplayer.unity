@@ -425,8 +425,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   forwardspeed: 5
-  roadWidth: 20
-  turnRotationAngle: 50
+  roadWidth: 5
+  turnRotationAngle: 40
   lerpSpeed: 10
   model: {fileID: 1681012743}
   _isActive: 0
@@ -587,7 +587,7 @@ GameObject:
   - component: {fileID: 1495581351}
   - component: {fileID: 1495581355}
   m_Layer: 0
-  m_Name: Cube (2)
+  m_Name: Win Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -13,15 +13,15 @@ namespace Runner
 
     public class PlayerController : MonoBehaviour
     {
-        [SerializeField] private float forwardspeed; //скорость для Move
+        [SerializeField] private float forwardspeed; // скорость для Move
         [SerializeField] private float roadWidth;
-        [SerializeField] private float turnRotationAngle = 30f;
-        [SerializeField] private float lerpSpeed = 5f;
-        [SerializeField] private Transform model;
+        [SerializeField] private float turnRotationAngle = 30f; // на сколько разрешаем повернуться
+        [SerializeField] private float lerpSpeed = 5f; //ыыыы ??? 
+        [SerializeField] private Transform model; //ссылка на модель, которую поворачиваем, задать руками !!!! :/
 
         private Rigidbody _rigidbody; // ссылка на ригибоди ДЛЯ ДВИЖЕНИЯ!
-        private Animator _animator; //дочерний от вьюшки
-        private InputHandler _inputHandler;
+        private Animator _animator; // дочерний от вьюшки
+        private InputHandler _inputHandler; // берет позицию из инпута
 
         public event Action Dobezal; 
 
@@ -29,8 +29,8 @@ namespace Runner
         // приват можно не писать, они и так по умолчанию...
         public bool _isActive;
         
-        // эти штуки райдер пишет автоматически поругавшись на "" в коде
-        // строковые значения надо хешировать, также чтобы каждый раз оно не хешировало пока выполняет колд
+        // эти штуки райдер пишет автоматически поругавшись на "" в коде ниже
+        // строковые значения надо хешировать, чтобы каждый раз оно не хешировало пока выполняет код
         private static readonly int Run = Animator.StringToHash("Run"); // на старте хешируем
         private static readonly int Dance = Animator.StringToHash("Dance");
         private static readonly int Fall = Animator.StringToHash("Fall");
@@ -38,13 +38,13 @@ namespace Runner
         // чтобы понимать, что этот флаг меняется - нужен геттер и сеттер :/ - это я хреново понимаю
         public bool IsActive
         {
-            get => _isActive; //возвращает
+            get => _isActive; // возвращает - куда? почему серенькое?
             
-            set //делает логику
+            set // делает логику
             {
                 _isActive = value;
 
-                if (_isActive) //true
+                if (_isActive) // true 
                 {
                     _animator.SetTrigger(Run); //alt enter - hash <----- передали название триггера (в аниматоре +)
                 }
@@ -53,7 +53,7 @@ namespace Runner
 
         private void Start()
         {
-            IsActive = true; // че за
+            IsActive = true; // чтобы сразу включилась анимация бега
         }
 
         void Awake()
@@ -65,29 +65,43 @@ namespace Runner
 
         
         // ----------- чтобы двигаться --------------------------------------------------------------------------
-        private void FixedUpdate() // не зависит от частоты кадров, вызывается до update
+        private void FixedUpdate() // не зависит от частоты кадров, вызывается до update. Начнет бежать тут.
         {
             if (!_isActive)
-                return;
+                return; //дальше не выполняем, если не активны то не бегаем
             Move(); 
         }
 
 
         void Move()
         {
-            var xOffset = -_inputHandler.HorizontalAxis * roadWidth; // минус - это то же что домножить на -1
+            // считывает HorizontalAxis в инпут в файле InputHandler!!!
+            // минус перд всем - это то же, что домножить на -1, без этого двигался ЗЕРКАЛЬНО от того, куда свайпаем
+            var xOffset = -_inputHandler.HorizontalAxis * roadWidth; 
 
-            var position = _rigidbody.position; // получаем позицию у ригибоди чувачка
-            position.x += xOffset;
+            // указываем, куда надо сместиться
+            var position = _rigidbody.position; // получаем текущую позицию у ригибоди чувачка
+            position.x += xOffset; // и к ней прибовляем вышепролученный оффсет
             
-            // ПРАВИЛО всегда сначала повороты потом движение!!!!!
+            // -------------------------поворот-----------------------------------------------------
+            // ПРАВИЛО ------- < всегда сначала повороты потом движение > --------------------------!!!!!
             // берем углы модели
             var rotation = model.localRotation.eulerAngles;
             
-            // ноль - положительное число
-            rotation.y = Mathf.LerpAngle(rotation.y, xOffset == 0? 0 :Mathf.Sign(xOffset) * turnRotationAngle, lerpSpeed * Time.deltaTime);
+            // поворот модели чела при повороте
+            // поворачиваем вокруг вертикальной оси, поворот даже в 2д считается в кватерионах
+            // берем текущие углы, 
+            // получаем знак оффсета, положительный или отрицательный? - Matf.Sign
+            // turn -30/+30, ноль - положительное число
+            // если оффсет не равен нулю - стремимся к 30, 
+            // Offset == 0 ? 0 : ------ если равен нулю - стремимся к нулю, если не равен то стремимся к 30 
+            rotation.y = Mathf.LerpAngle(rotation.y, xOffset == 0 ? 0 : Mathf.Sign(xOffset) * turnRotationAngle, lerpSpeed * Time.deltaTime);
+           
+            // присваеиваем полученный угол модели, переводя в кватерионы 
             model.localRotation = Quaternion.Euler(rotation);
             
+            //-----------------------------бег---------------------------------------------------
+            // позицию куда смещаемся сдвинуть вперед
             // !! обратились к найденному у игрока КОМПОНЕНТУ ригибоди
             // forward - направление
             // вторые скобки шоб плавающая точка не мешала умножать
