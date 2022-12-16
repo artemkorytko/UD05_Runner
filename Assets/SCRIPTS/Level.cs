@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Runner
@@ -28,19 +29,27 @@ namespace Runner
         // ширина для расстановки стенок
         [SerializeField] private float roadPartWigth = 6f;
         
+        
         // заводим локальную ссылку на плеера для GeneratePlayer
         private PlayerController _player; // опять похожих развели >:(
+        // и заинкапсулировать её для передачи далее
+        public PlayerController Player => _player; 
+        
+        
+        
         
         //на старте генерируем уровень, массивом создаем дорогу и плеера на ней
-        void Start()
-        {
-            GenerateLevel(); // пока дебажно тут, потом надо засунуть в гейм менеджер
-        }
+        // void Start()
+        // {
+        //     GenerateLevel(); // пока дебажно тут, потом надо засунуть в гейм менеджер
+        // }
 
         
         
         public void GenerateLevel()
         {
+            // очистить старый уровень перед тем как генерить новый
+            Clear(); 
             //уровень состоит из фаз:
             // создаем дорогу
             GenerateRoad();
@@ -48,7 +57,18 @@ namespace Runner
             GeneratWalls();
         }
 
-        
+        private void Clear()
+        {
+            // надо перебрать все дочерние компонеты и задестроить
+            for (int i = 0; i < transform.childCount; i++)
+            {
+                // дестроим не чайлды а их геймобжекты
+                Destroy(transform.GetChild(i).GameObject());
+            }
+
+            // сбрасываем ссылку на плеера 
+            _player = null;
+        }
 
 
         private void GenerateRoad()
@@ -95,51 +115,53 @@ namespace Runner
         private void GeneratWalls()
                 {
                     // надо высчитать всю длину трассы от начала до финиша
-                    var fulllength = roadPartCount * roadPartLength;
+                    var fulllength = roadPartCount * roadPartLength; // 10 частей * 5 = 50
                     
                     // откуда начинаем стаить стенки - пропускаем два сегмента
-                    var currentLength = roadPartLength * 2f; //или просто 2
+                    var currentLength = roadPartLength * 2f; // (или просто 2) стартуем с позиции 10
                     
                     // ставить стены в три позиции: слева, середина, право
                     // надо получить ширину 1/3 дороги
-                    var wallOffsetX = roadPartWigth * 0.33333f;
+                    var wallOffsetX = roadPartWigth * 0.33333f; // 2 
                     
                     // позиции: -3 -1 1 ширина 2
                     // ширина 6     ------ ыыыыы
-                    var startPosX = -roadPartWigth * 0.5f;
+                    var startPosX = -roadPartWigth * 0.5f; // -3
                     
                     //-----------------------------------------------------------------------------------
                     // цикл повторяет построение вровня не зависимо от сегментов дороги
                     // цикл работает, пока текущая дина меньше всей длины трассы
-                    while (currentLength < fulllength)
+                    while (currentLength < fulllength) // while < 50 --- после 1го раза придет 14,3
                     {
                         //----------------------- длина -------------------------------------
-                        // заводим два значения вверху - минимальный и макс оффсет <------ че такое оффсет?
+                        // заводим два значения вверху - минимальный и макс оффсет <----- это НА СКОЛЬКО СМЕСТИЛИСЬ
                         // а тут - насколько смещаем вперед -рандом.между ( мимальным, и максимальным)
-                        var zOffset = minWallOffset + Random.Range(minWallOffset, maxWallOffset);
+                        // между стенками бужет рандомно от 3 до 5
+                        var zOffset = minWallOffset + Random.Range(minWallOffset, maxWallOffset); // 3f - 5f -> 4.3
                         
                         // к текущему значению прибаляем наш оффсет
-                        currentLength += zOffset; // += прибавить к себе же
+                        currentLength += zOffset; // += прибавить к себе же // 10 + 4.3f = 14.3 по Z !
                         
                         // длину надо заклепить. Clamp - ограничить в доапазоне (входной параметр/кого держим, от, до)
                         // чтобы она не вышла после добавлений за пределы максимальной длины
-                        currentLength = Mathf.Clamp(currentLength, 0, fulllength);
+                        currentLength = Mathf.Clamp(currentLength, 0, fulllength); // not > 50
 
                         //в итоге нашли длину на которую себя сместим
                         
                         
                         //-------------------------- ширина ----------------------------------
+                        // ширина стены 2
                         // последнее значение не попадает в выборку рандома, это инты, значит будет только 0/1/2
-                        var rndPositionX = Random.Range(0, 3); 
+                        var rndPositionX = Random.Range(0, 3); // 0-1-2
                         
                         //                       -3          1/3 дороги   0/1/2
                         //    например           -3          2*0 = -3
-                        var wallPositionX = startPosX + wallOffsetX * rndPositionX;
+                        var wallPositionX = startPosX + wallOffsetX * rndPositionX; // -3 + 2 * (1/0/2) = -1 по X
                         
                         // создаем вектор, который мы отмодифицируем
-                        var localPosition = Vector3.zero;
-                        localPosition.x = wallPositionX;
-                        localPosition.z = currentLength;
+                        var localPosition = Vector3.zero; //  новая позиция 0,0,0
+                        localPosition.x = wallPositionX; // -1, 0, 0
+                        localPosition.z = currentLength; // -1, 0, 14.3
                         
                         // создаем стену
                         Instantiate(wallPrefab, localPosition, Quaternion.identity, transform);

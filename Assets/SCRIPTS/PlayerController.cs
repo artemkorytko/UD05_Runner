@@ -13,8 +13,9 @@ namespace Runner
 
     public class PlayerController : MonoBehaviour
     {
-        [SerializeField] private float forwardspeed; // скорость для Move
-        [SerializeField] private float roadWidth;
+        [SerializeField] private float forwardspeed = 5f; // скорость для Move
+        [SerializeField] private float sidespeed = 10f; 
+        [SerializeField] private float roadWidth = 5f;
         [SerializeField] private float turnRotationAngle = 30f; // на сколько разрешаем повернуться
         [SerializeField] private float lerpSpeed = 5f; //ыыыы ??? 
         [SerializeField] private Transform model; //ссылка на модель, которую поворачиваем, задать руками !!!! :/
@@ -23,7 +24,9 @@ namespace Runner
         private Animator _animator; // дочерний от вьюшки
         private InputHandler _inputHandler; // берет позицию из инпута
 
-        public event Action Dobezal; 
+        public event Action Dobezal;
+        // у АК -  public event Action OnWin;
+        public event Action OnDie;
 
         // флаг про то что изменилось состояние активности
         // приват можно не писать, они и так по умолчанию...
@@ -78,11 +81,16 @@ namespace Runner
         {
             // считывает HorizontalAxis в инпут в файле InputHandler!!!
             // минус перд всем - это то же, что домножить на -1, без этого двигался ЗЕРКАЛЬНО от того, куда свайпаем
-            var xOffset = -_inputHandler.HorizontalAxis * roadWidth; 
+            var xOffset = -_inputHandler.HorizontalAxis * sidespeed; 
+            
 
             // указываем, куда надо сместиться
             var position = _rigidbody.position; // получаем текущую позицию у ригибоди чувачка
             position.x += xOffset; // и к ней прибовляем вышепролученный оффсет
+            // теперь эту позицию нужно заклемпать, чтобы чувак не выбегал за пределы дороги:
+            position.x = Mathf.Clamp(position.x, -roadWidth * 0.5f, roadWidth * 0.5f);
+            // ширна дороги 6 ==>  и пусть бегаем между -3 и +3. СЕРЕДИНА ДОРОГИ ВЫХОДИТ НОЛЬ?
+            
             
             // -------------------------поворот-----------------------------------------------------
             // ПРАВИЛО ------- < всегда сначала повороты потом движение > --------------------------!!!!!
@@ -141,13 +149,14 @@ namespace Runner
             if (collision.gameObject.GetComponent<WallComponent>())
             {
                 Died();
+                OnDie?.Invoke(); 
             }
             
             
             if (collision.gameObject.GetComponent<WInCubeComponent>())
             {
                 Finish();
-                Dobezal?.Invoke(); // ! БОЛЬШЕ НЕ РАБОТАЕТ 
+                Dobezal?.Invoke(); // ! КУБ БОЛЬШЕ НЕ РАБОТАЕТ 
             }
             
             
@@ -168,6 +177,7 @@ namespace Runner
         {
             _isActive = false;
             _animator.SetTrigger(Fall);
+            OnDie?.Invoke();
         }
 
 
@@ -179,7 +189,7 @@ namespace Runner
         {
             _isActive = false;
             _animator.SetTrigger(Dance);
-            
+            Dobezal?.Invoke();
         }
 
         

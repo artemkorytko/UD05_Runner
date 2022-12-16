@@ -134,7 +134,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   forwardspeed: 5
-  roadWidth: 10
+  sidespeed: 10
+  roadWidth: 6
   turnRotationAngle: 40
   lerpSpeed: 10
   model: {fileID: 5762584519919929804}
@@ -235,7 +236,7 @@ PrefabInstance:
     - target: {fileID: -3742004091854815210, guid: 3bbf77814392947ef9393be541c8cfbc, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: bf7f33ceb56ba4034860e7e3e9a3ab7f, type: 2}
+      objectReference: {fileID: 2100000, guid: f5f9bcda2d3ed467891abff390e6351d, type: 2}
     - target: {fileID: 919132149155446097, guid: 3bbf77814392947ef9393be541c8cfbc, type: 3}
       propertyPath: m_Name
       value: Player
