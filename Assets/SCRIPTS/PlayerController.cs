@@ -51,6 +51,7 @@ namespace Runner
             }
         }
 
+        //временно закоммитили дабы активировать из другого места
         private void Start()
         {
             IsActive = true; // чтобы сразу включилась анимация бега
@@ -95,7 +96,12 @@ namespace Runner
             // turn -30/+30, ноль - положительное число
             // если оффсет не равен нулю - стремимся к 30, 
             // Offset == 0 ? 0 : ------ если равен нулю - стремимся к нулю, если не равен то стремимся к 30 
+            //дергается но работает:
             rotation.y = Mathf.LerpAngle(rotation.y, xOffset == 0 ? 0 : Mathf.Sign(xOffset) * turnRotationAngle, lerpSpeed * Time.deltaTime);
+            
+           // rotation.y = Mathf.LerpAngle(rotation.y, _inputHandler.IsHold ? Mathf.Abs(xOffset) > 0.01f ? Mathf.Sign(xOffset) * )
+           //     turnRotationAngle : 0 : 0, lerpSpeed * Time.deltaTime);
+            
            
             // присваеиваем полученный угол модели, переводя в кватерионы 
             model.localRotation = Quaternion.Euler(rotation);
@@ -118,6 +124,7 @@ namespace Runner
             if (other.gameObject)
             {
                 Finish();
+                
             }
         }
 
@@ -140,7 +147,7 @@ namespace Runner
             if (collision.gameObject.GetComponent<WInCubeComponent>())
             {
                 Finish();
-                Dobezal?.Invoke();
+                Dobezal?.Invoke(); // ! БОЛЬШЕ НЕ РАБОТАЕТ 
             }
             
             
@@ -172,6 +179,7 @@ namespace Runner
         {
             _isActive = false;
             _animator.SetTrigger(Dance);
+            
         }
 
         

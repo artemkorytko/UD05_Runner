@@ -2,7 +2,8 @@ using UnityEngine;
 
 namespace Runner 
 {
-    //[SerializeField] private winparticles;
+    // ПОКА КУБ НЕ БЫЛ В ПРЕФАБЕ - РАБОТАЛО, НИД ХЕЛП!!!!
+    
     public class WInCubeComponent : MonoBehaviour
     {
        [SerializeField] private ParticleSystem _winparticles;
@@ -13,7 +14,7 @@ namespace Runner
         {
             _winparticles = GetComponentInChildren<ParticleSystem>();
             
-            _playerControllerFile = FindObjectOfType<PlayerController>();//вечно это забываю ((((
+            _playerControllerFile = FindObjectOfType<PlayerController>(); // вечно это забываю ((((
             _playerControllerFile.Dobezal += StartWinParticlesBurst;
         }
 

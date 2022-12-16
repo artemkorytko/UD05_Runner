@@ -1,12 +1,14 @@
+using Unity.VisualScripting;
+using UnityEngine;
+
 namespace Runner
 {
 
 
-    namespace DefaultNamespace
+    public class FinishComponent : MonoBehaviour
     {
-        public class FinishComponent
+        void Start()
         {
-
         }
     }
 

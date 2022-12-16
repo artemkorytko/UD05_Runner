@@ -23,8 +23,8 @@ namespace Runner
         
         // показать наружу HorizontalAxis наш унифицированный оффсет - будет использовтаься в PlayerController, Move()
         public float HorizontalAxis => _relativeOffset;
-        
-       
+
+        public bool IsHold => _isHold; //выносим наружу для починки поворота
         
         
         private void Update() // тут считываем то что было нажато
