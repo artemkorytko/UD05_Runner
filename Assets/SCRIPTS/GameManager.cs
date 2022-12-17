@@ -88,6 +88,7 @@ namespace Runner
             _level.Player.Dobezal -= OnWin; 
             _level.Player.OnDie -= OnDead;
             
+            
             // код отсновит выполнение в этом методе, пока не выполнится это условие
             yield return new WaitForSeconds(delay);
             

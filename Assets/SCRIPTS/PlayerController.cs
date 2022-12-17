@@ -29,7 +29,6 @@ namespace Runner
         public event Action OnDie;
 
         // флаг про то что изменилось состояние активности
-        // приват можно не писать, они и так по умолчанию...
         public bool _isActive;
         
         // эти штуки райдер пишет автоматически поругавшись на "" в коде ниже
@@ -41,7 +40,7 @@ namespace Runner
         // чтобы понимать, что этот флаг меняется - нужен геттер и сеттер :/ - это я хреново понимаю
         public bool IsActive
         {
-            get => _isActive; // возвращает - куда? почему серенькое?
+            get => _isActive; // возвращает - куда? почему серенькое????????????
             
             set // делает логику
             {
@@ -132,7 +131,7 @@ namespace Runner
             if (other.gameObject)
             {
                 Finish();
-                
+                Dobezal?.Invoke(); // ! КУБ БОЛЬШЕ НЕ РАБОТАЕТ 
             }
         }
 
@@ -156,7 +155,7 @@ namespace Runner
             if (collision.gameObject.GetComponent<WInCubeComponent>())
             {
                 Finish();
-                Dobezal?.Invoke(); // ! КУБ БОЛЬШЕ НЕ РАБОТАЕТ 
+               
             }
             
             
@@ -181,9 +180,7 @@ namespace Runner
         }
 
 
-
-
-
+        
         [ContextMenu("Dance")]
         private void Finish()
         {
@@ -192,8 +189,7 @@ namespace Runner
             Dobezal?.Invoke();
         }
 
-        
-        
+
     }
 
 }

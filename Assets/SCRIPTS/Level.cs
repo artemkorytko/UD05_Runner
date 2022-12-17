@@ -1,7 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Runner
 {
@@ -33,9 +35,9 @@ namespace Runner
         // заводим локальную ссылку на плеера для GeneratePlayer
         private PlayerController _player; // опять похожих развели >:(
         // и заинкапсулировать её для передачи далее
-        public PlayerController Player => _player; 
-        
-        
+        public PlayerController Player => _player;
+
+        private ParticleSystem winparticles;
         
         
         //на старте генерируем уровень, массивом создаем дорогу и плеера на ней
@@ -69,8 +71,8 @@ namespace Runner
             // сбрасываем ссылку на плеера 
             _player = null;
         }
-
-
+ 
+        //------------------------------------------ дорога ------------------------------------------------------------
         private void GenerateRoad()
         {
             // заводим стартовую позицию, проще всего с нулевой - вектор 0
@@ -96,7 +98,11 @@ namespace Runner
             // roadLocalPosition - ставим его в это локальное место 
             // Quaternion.identity - нулевой поворот - все значения прямо
             
+            // в финишном куске получсаем ссылку на заготовленный салют
+            winparticles = GetComponentInChildren<ParticleSystem>();
         }
+        
+        //------------------------------------------ игрок -------------------------------------------------------------
         private void GeneratePlayer()
         {
             // создать плеера, var - получить на него ссылку, ЧТО ТАКОЕ ТРАНСОФРМ?????? <--------------------------
@@ -110,8 +116,11 @@ namespace Runner
             // из-за того что он тут объект типа "GameObject" - надо получить его компонент PlayerController
             _player = player.GetComponent<PlayerController>();
             
+            // подписака на событие в плеере для салюта
+            _player.Dobezal += WinParticlesBurst;
         }
         
+        //----------------------------------------- стены --------------------------------------------------------
         private void GeneratWalls()
                 {
                     // надо высчитать всю длину трассы от начала до финиша
@@ -137,7 +146,10 @@ namespace Runner
                         // заводим два значения вверху - минимальный и макс оффсет <----- это НА СКОЛЬКО СМЕСТИЛИСЬ
                         // а тут - насколько смещаем вперед -рандом.между ( мимальным, и максимальным)
                         // между стенками бужет рандомно от 3 до 5
-                        var zOffset = minWallOffset + Random.Range(minWallOffset, maxWallOffset); // 3f - 5f -> 4.3
+                        // сначала было так:
+                        var zOffset = minWallOffset + Random.Range(minWallOffset, maxWallOffset); 
+                        // потом меняли, но тогда стен сильно много, фиг добежишь:
+                        // var zOffset = Random.Range(minWallOffset, maxWallOffset);    // 3f - 5f -> 4.3
                         
                         // к текущему значению прибаляем наш оффсет
                         currentLength += zOffset; // += прибавить к себе же // 10 + 4.3f = 14.3 по Z !
@@ -169,20 +181,22 @@ namespace Runner
                         // transform - назначаем ему родителя 
                         // roadLocalPosition - ставим его в это локальное место 
                         // Quaternion.identity - нулевой поворот - все значения прямо
-                        
-                        // !!! ПЕРЕПИСАТЬ КАК У АК
-                        
-                        
-
                     }
 
 
                 }
-        
-        void Update()
-        {
+         //------------------ салют на финише - изнутри префаба куба не работало (почему?), тут работает ---------------
+         void WinParticlesBurst()
+         {
+             Debug.Log("событие Dobezal передано партиклам "); // ??? 2 раза пишет! 
+             winparticles.Play(); 
+         }
 
-        }
+         private void OnDestroy()
+         {
+             // отписка, если ее оставить - то дважды передаст событие О_о
+             // _player.Dobezal -= WinParticlesBurst;
+         }
     }
 
 }

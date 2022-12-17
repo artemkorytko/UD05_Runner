@@ -7,9 +7,7 @@ namespace Runner
 
     public class FinishComponent : MonoBehaviour
     {
-        void Start()
-        {
-        }
+        
     }
 
 }
