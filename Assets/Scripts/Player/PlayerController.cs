@@ -25,17 +25,7 @@ namespace Runner
         public event Action OnWin;
         public event Action OnDead;
         public event Action<int> OnCoint;
-
-        public int CountCoits
-        {
-            get => _countCoits;
-            private set
-            { 
-                _countCoits = value;
-                OnCoint?.Invoke(_countCoits);
-            } 
-        }
-
+        
         public bool IsActive
         {
             get => _isActive;
@@ -104,7 +94,8 @@ namespace Runner
 
         private void AddCoits()
         {
-            CountCoits++;
+            _countCoits++;
+            OnCoint?.Invoke(_countCoits);
         }
 
         [ContextMenu("Died")] // атрибут в инспекторе можно вызывать метод (ПКМ) по компаненту

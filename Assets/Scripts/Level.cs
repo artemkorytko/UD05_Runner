@@ -24,7 +24,7 @@ namespace Runner
 
         private PlayerController _player;
         
-        public PlayerController Player => _player;
+        public PlayerController Player => _player; // ссылка на игрока
         
         public void GenegateLevel()
         {
@@ -44,6 +44,12 @@ namespace Runner
             _player = null; // сброс ссылки плейера
         }
 
+        public void RestartLevel()
+        {
+            Destroy(_player.gameObject);
+            GenegatePlayer();
+        }
+
         private void GenegateRoad()
         {
             var roadLocalPosition = Vector3.zero;
@@ -57,7 +63,7 @@ namespace Runner
             Instantiate(_finihsPrefab, roadLocalPosition, Quaternion.identity, transform);
         }
         
-        private void GenegatePlayer()
+        private void GenegatePlayer() 
         {
             var player = Instantiate(_playerPrefab, transform);
             player.transform.localPosition = new Vector3(0f,0f, _roadPartLength * 0.5f); //  * 0.5f - стараемся всегда заменять деление(/) на умножение(*) !!!

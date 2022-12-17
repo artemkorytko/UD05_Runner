@@ -11,28 +11,95 @@ namespace Runner
         
         [SerializeField] private Level _levelPrefab;
         [SerializeField] private float _delay = 1f;
-
+        
+        private UIController _uiController;
         private Level _level;
+        private int _currentlevel;
+        private int _coints;
+        
+        public event Action<int> OnAddCoint;
+        public event Action Win;
+        public event Action Fail;
 
-        private Coroutine _coroutine; // это переменная будет хранить ссылку на карутину (для успешной остановки карутины когда их дохрена...)
+        
+        public event Action<int> OnNextLevelIndex; 
+        
+        private int LevelIndex
+        {
+            get => _currentlevel;
+            set
+            {
+                _currentlevel = value;
+                OnNextLevelIndex?.Invoke(LevelIndex);
+            }
+        }
+
+        public int Coints
+        {
+            get => _coints;
+            set
+            {
+                _coints = value; 
+                OnAddCoint?.Invoke(Coints);
+            }
+        }
 
         private void Awake()
         {
-            _level = Instantiate(_levelPrefab, transform);
+            LoadData();
+            _uiController = FindObjectOfType<UIController>();
         }
 
         private void Start()
         {
+            _uiController.OnStartGame += StartGame;
+            _uiController.OnRestartLevel += RestartCurrentLevel;
+        }
+
+        private void OnDestroy()
+        {
+            SaveData(SAVE_COINT, Coints);
+            SaveData(SAVE_LEVEL, LevelIndex);
+            
+            _uiController.OnStartGame -= StartGame;
+            _uiController.OnRestartLevel -= RestartCurrentLevel;
+        }
+        
+        private void StartGame()
+        {
+            if (_level != null)
+            {
+                Destroy(_level.gameObject);
+                LevelIndex++;
+            }
+
+            _level = Instantiate(_levelPrefab, transform);
             StartLevel();
         }
 
         private void StartLevel()
         {
             _level.GenegateLevel();
-            _level.Player.IsActive = true; // тут нуно поправить тип ДЗ 
+            _level.Player.IsActive = true; // тут нужно поправить тип ДЗ
             
             _level.Player.OnWin += OnWin;
             _level.Player.OnDead += OnDead;
+            _level.Player.OnCoint += AddCoint;
+        }
+        
+        private void RestartCurrentLevel()
+        {
+            _level.RestartLevel();
+            _level.Player.IsActive = true;
+            
+            _level.Player.OnWin += OnWin;
+            _level.Player.OnDead += OnDead;
+            _level.Player.OnCoint += AddCoint; 
+        }
+
+        private void AddCoint(int coint)
+        {
+            Coints++;
         }
 
         private void OnDead()
@@ -44,54 +111,39 @@ namespace Runner
 
         private void OnWin()
         {
-            /*_coroutine = */StartCoroutine(WinWithDelay());
-            /*StartCoroutine(WinWithDelay());
             StartCoroutine(WinWithDelay());
-            StartCoroutine(WinWithDelay());
-            StartCoroutine(WinWithDelay());
-            StopCoroutine(_coroutine);*/ // остановить карутину можно только по ссылке ... но это когда их ДОХРЕНА.. и я хочу остановить какуе-то из них.. вот и все(а ну и можно в массив их засунуть)
         }
 
-        private IEnumerator WinWithDelay() // карутина это соПрограмма которая запустилась ПАРАЛЛЕЛЬНО нам!!!!!!!!!!!!!!
+        private IEnumerator WinWithDelay() // карутина это соПрограмма которая запустилась ПАРАЛЛЕЛЬНО нам!!!!!!!!!
         {
             yield return ClearDelay();
-            StartLevel();
-            // yield return null - дождаться окончание (Update)! 
-            // yield return  new WaitForEndOfFrame() - дождаться окончание кадра
-            // yield return new WaitForFixedUpdate() - дождаться окончание когда отработет физический движок
-            // yield return new WaitForSecondsRealtime(); - ждать секунды телефона(дивайса)
-            // yield return new WaitWhile(() => _delay == 1); - пока условие(истина) _delay == 1, то код остановиться (или любое другое условие) т.е если условие будет (false) то мы выйдем из его.
-            // yield return new WaitUntil(() => _delay != 1)); - (на оборот WaitWhile) т.е пока тут false, то код будет работать...
-            // yield return StartCoroutine(FailWithDelay()); - ждемс... когда отработает след. карутина и дальше будет работать код что будет написан ниже (в IEnumerator WinWithDelay())
-            
-            /*while (expression < 1)
-            {
-                expression += Time.deltaTime; - эта запись значит, что один "ТИК"(yield return null) Update будет происходить expression += Time.deltaTime, пока expression < 1
-                yield return null;
-            }*/
+            Win?.Invoke(); 
         }
 
         private IEnumerator FailWithDelay()
         {
             yield return ClearDelay(); // запуск карутины тип как StartCoroutine(ClearDelay());
-            StartLevel();
+            Fail?.Invoke();
         }
 
         private IEnumerator ClearDelay()
         {
-            yield return  new WaitForSeconds(_delay);
+            yield return new WaitForSeconds(_delay);
+            
             _level.Player.OnWin -= OnWin;
             _level.Player.OnDead -= OnDead;
+            _level.Player.OnCoint -= AddCoint;
         }
         
-        private void SaveData()  // система сохранения (установить)
+        private void SaveData(string key, int index)  
         {
-           // PlayerPrefs.SetInt(SAVE_LEVEL, _currentLevelIndex); 
+            PlayerPrefs.SetInt(key, index);
         }
 
-        private void LoadData() // система сохранения (записать)
+        private void LoadData() 
         {
-           // _currentLevelIndex = PlayerPrefs.GetInt(SAVE_LEVEL, 0);
+            _currentlevel = PlayerPrefs.GetInt(SAVE_LEVEL, 0);
+            _coints = PlayerPrefs.GetInt(SAVE_COINT, 0);
         }
     }
 }
