@@ -111,6 +111,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 117859865bad42799e810ab0ec6d6655, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _finishpart: {fileID: 5965945503230556363, guid: cab56a50b95bb474eb8e21308f482422, type: 3}
   _winparticles: {fileID: 1770553640053641873}
 --- !u!1 &1770553640053641878
 GameObject:

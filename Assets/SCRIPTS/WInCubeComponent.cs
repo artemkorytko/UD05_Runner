@@ -7,23 +7,23 @@ namespace Runner
     public class WInCubeComponent : MonoBehaviour
     {
         //[SerializeField] private GameObject _finishpart;
-        //[SerializeField] private ParticleSystem _winparticles;
+        [SerializeField] private ParticleSystem _winparticles;
 
-        //private PlayerController _playerControllerFile;
+        private PlayerController _playerControllerFile;
         
         void Awake()
         {
             
-            // _winparticles = GetComponentInChildren<ParticleSystem>();
-            //
-            // _playerControllerFile = FindObjectOfType<PlayerController>(); // вечно это забываю ((((
-            // _playerControllerFile.Dobezal += StartWinParticlesBurst;
+            _winparticles = GetComponentInChildren<ParticleSystem>();
+            
+            _playerControllerFile = FindObjectOfType<PlayerController>(); // вечно это забываю ((((
+            _playerControllerFile.Dobezal += StartWinParticlesBurst;
         }
 
-        // void StartWinParticlesBurst()
-        // {
-        //     Debug.Log("событие Dobezal передано в куб");
-        //     _winparticles.Play(); // 
-        // }
+        void StartWinParticlesBurst()
+        {
+            Debug.Log("событие Dobezal передано в куб");
+            _winparticles.Play(); //------ работало без префаба или если управлять из Level
+        }
     }
 }

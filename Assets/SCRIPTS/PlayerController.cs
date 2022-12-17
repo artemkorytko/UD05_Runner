@@ -17,16 +17,13 @@ namespace Runner
         [SerializeField] private float sidespeed = 10f; 
         [SerializeField] private float roadWidth = 5f;
         [SerializeField] private float turnRotationAngle = 30f; // на сколько разрешаем повернуться
-        [SerializeField] private float lerpSpeed = 5f; //ыыыы ??? 
+        [SerializeField] private float lerpSpeed = 5f; //для плавности поворота что ли??? 
         [SerializeField] private Transform model; //ссылка на модель, которую поворачиваем, задать руками !!!! :/
 
         private Rigidbody _rigidbody; // ссылка на ригибоди ДЛЯ ДВИЖЕНИЯ!
         private Animator _animator; // дочерний от вьюшки
         private InputHandler _inputHandler; // берет позицию из инпута
 
-        public event Action Dobezal;
-        // у АК -  public event Action OnWin;
-        public event Action OnDie;
 
         // флаг про то что изменилось состояние активности
         public bool _isActive;
@@ -37,14 +34,25 @@ namespace Runner
         private static readonly int Dance = Animator.StringToHash("Dance");
         private static readonly int Fall = Animator.StringToHash("Fall");
 
-        // чтобы понимать, что этот флаг меняется - нужен геттер и сеттер :/ - это я хреново понимаю
+        public event Action Dobezal;
+        // у АК -  public event Action OnWin;
+        public event Action OnDie;
+        
+        
+        // чтобы понимать, что этот флаг меняется - нужен геттер и сеттер :/ - это я вообще хреново понимаю
         public bool IsActive
         {
-            get => _isActive; // возвращает - куда? почему серенькое????????????
+            // гугл: гет получает значение поля класса :/
+            // гугл: функция без аргументов, которая сработает при чтении свойства
+            // возвращает нам - куда? почему серенькое????????????
+            get => _isActive; 
             
-            set // делает логику
+            // делает логику
+            // гугл: сет - изменяет значение поля класса
+            // гугл: сет - функция, принимающая один аргумент, вызываемая при присвоении свойства
+            set
             {
-                _isActive = value;
+                _isActive = value; //что за value???
 
                 if (_isActive) // true 
                 {
@@ -53,11 +61,11 @@ namespace Runner
             }
         }
 
-        //временно закоммитили дабы активировать из другого места
-        private void Start()
-        {
-            IsActive = true; // чтобы сразу включилась анимация бега
-        }
+        // временно закоммитили дабы активировать из другого места !!!!!!!!
+        // private void Start()
+        // {
+        //     IsActive = true; // чтобы сразу включилась анимация бега
+        // }
 
         void Awake()
         {
@@ -176,10 +184,20 @@ namespace Runner
         {
             _isActive = false;
             _animator.SetTrigger(Fall);
+            
             OnDie?.Invoke();
+            StartCoroutine(WaitTillHeFalls()) ;
+        }
+
+        private IEnumerator WaitTillHeFalls()
+        {
+            yield return new WaitForSeconds(5);
+            Debug.Log("Корутина сработала");
         }
 
 
+        
+        
         
         [ContextMenu("Dance")]
         private void Finish()
