@@ -37,7 +37,7 @@ namespace Runner
         // и заинкапсулировать её для передачи далее
         public PlayerController Player => _player;
 
-        private ParticleSystem winparticles;
+        //-------САЛЮТ-----    private ParticleSystem winparticles;
         
         
         //на старте генерируем уровень, массивом создаем дорогу и плеера на ней
@@ -99,7 +99,7 @@ namespace Runner
             // Quaternion.identity - нулевой поворот - все значения прямо
             
             // в финишном куске получсаем ссылку на заготовленный салют
-            winparticles = GetComponentInChildren<ParticleSystem>();
+            //-------САЛЮТ----- winparticles = GetComponentInChildren<ParticleSystem>();
         }
         
         //------------------------------------------ игрок -------------------------------------------------------------
@@ -117,7 +117,7 @@ namespace Runner
             _player = player.GetComponent<PlayerController>();
             
             // подписака на событие в плеере для салюта
-            _player.Dobezal += WinParticlesBurst;
+            //-------САЛЮТ-----_player.Dobezal += WinParticlesBurst;
         }
         
         //----------------------------------------- стены --------------------------------------------------------
@@ -186,17 +186,17 @@ namespace Runner
 
                 }
          //------------------ салют на финише - изнутри префаба куба не работало (почему?), тут работает ---------------
-         void WinParticlesBurst()
-         {
-             Debug.Log("событие Dobezal передано партиклам "); // ??? 2 раза пишет! 
-             winparticles.Play(); 
-         }
+         //-------САЛЮТ----- void WinParticlesBurst()
+         // {
+         //     Debug.Log("событие Dobezal передано партиклам "); // ??? 2 раза пишет! 
+         //     winparticles.Play(); 
+         // }
 
-         private void OnDestroy()
-         {
-             // отписка, если ее оставить - то дважды передаст событие О_о
-             // _player.Dobezal -= WinParticlesBurst;
-         }
+         // private void OnDestroy()
+         // {
+         //     // отписка, если ее оставить - то дважды передаст событие О_о
+         //     // _player.Dobezal -= WinParticlesBurst;
+         // }
     }
 
 }
