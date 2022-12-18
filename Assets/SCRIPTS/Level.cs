@@ -6,6 +6,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
+
 namespace Runner
 {
     public class Level : MonoBehaviour
@@ -52,6 +53,11 @@ namespace Runner
         private float currentLength;
         private float wallOffsetX;
         private float startPosX;
+        
+        // ------------------
+        
+        // словарь для монет??
+        // Dictionary<string, GameObject> coinDict = new Dictionary<string, GameObject>();
 
 
         //на старте генерируем уровень, массивом создаем дорогу и плеера на ней
@@ -205,6 +211,20 @@ namespace Runner
         }
 
         //------------------ МОНЕТКИ ----------------------------------------------------------------------------------
+        
+        /*
+        private void GenerateList(Dictionary<string, GameItemData> itemsData)
+        {
+            foreach (var key in itemsData.Keys)
+            {
+                UIItem item = Instantiate(prefab, content);
+                item.SetSprite(itemsData[key].Sprite);
+                item.SetCount(itemsData[key].Amount);
+                items.Add(key, item);
+            }
+        }
+        */
+        
         private void GenerateCoins()
         {
             Debug.Log("Монетки начали генерацию");
@@ -213,6 +233,9 @@ namespace Runner
             //wallOffsetX = roadPartWigth * 0.33333f; // 2 
             //startPosX = -roadPartWigth * 0.5f; // -3
 
+            // clear coins Dict
+            // coinDict.Clear();
+            
             int counter = 1;
             // скопировала со cтен
             while (currentLength < fulllength) // while < 50 --- и минус пять в конце
@@ -236,12 +259,19 @@ namespace Runner
                 currentLength = Mathf.Clamp(currentLength, 0, fulllength); // not > 50
                 
                 var localPosition = Vector3.zero; //  новая позиция 0,0,0
-                localPosition.x = 1; // -1, 0, 0
+                localPosition.x = 0; // -1, 0, 0
                 localPosition.z = currentLength;  // localPosition.z + counter * 2; // -1, 0, 14.3
-                counter++;
+                
 
                 // создаем?
-                Instantiate(coinPrefab, localPosition, Quaternion.identity, transform);
+                GameObject thisCoin = Instantiate(coinPrefab, localPosition, Quaternion.identity, transform);
+                
+                // Dict ###################### пыталась пихать имя монет в словать, но я увы его не понимаю
+                //      ###################### хотя даже мини-проект делала по словарб случайных чисел:/
+                // coinDict.Add("coin_" + counter.ToString(), thisCoin);
+                // thisCoin.name = "coin_" + counter.ToString();
+                
+                counter++;
             }
         }
 

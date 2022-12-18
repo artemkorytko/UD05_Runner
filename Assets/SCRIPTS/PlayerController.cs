@@ -141,8 +141,13 @@ namespace Runner
             Debug.Log("TRIGGER KOZEL: " + other.gameObject.name); 
             
             // if (other.gameObject.GetComponent<CoinComponent>())
-            if (other.gameObject.name == "Cylinder")  
+
+            if (other.gameObject.name == "Cylinder")
             {
+                // ##################################### пыталась узнать имя парента (монета>цилиндр) :/ 
+                //string st = other.GetComponentInParent<GameObject>().name;
+                //Debug.Log(st);
+                
                 GotaCoin();
             }
 
