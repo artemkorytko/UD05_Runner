@@ -15,9 +15,11 @@ namespace Runner
 
         private Level _level;
 
+        public event Action LevelChanged;
+        
         private void Awake()
         {
-            _level = Instantiate(levelPrefab, transform); // внутрь текущего трансформа ???
+            _level = Instantiate(levelPrefab, transform); // #######################[ внутрь текущего трансформа ??? ]
             
         }
         
@@ -31,7 +33,7 @@ namespace Runner
 
         private void StartLevel()
         {
-            _level.GenerateLevel(); // обратились к функции внутри Level или к компонету на созданном левеле!!!????
+            _level.GenerateLevel(); // обратились к функции внутри Level вроде как
             
             // надо запустить игрока 
             _level.Player.IsActive = true;
@@ -43,7 +45,7 @@ namespace Runner
             // Начать звук бега: прям сразу ищет компонент и в нем запустили функцию О_о
             FindObjectOfType<AudioManager>().InitSound();
             
-            
+            LevelChanged?.Invoke();
         }
 
         //------------ методы по событиям --------------------------------------------------------------------------
@@ -69,16 +71,17 @@ namespace Runner
            
             // без UI мы хотим запустить новый уровень
             // надо: отписаться от старых событий
-
         }
+        
         
         private IEnumerator FailWithdelay()
         {
             yield return ClearDelay(); 
             
-          //  StartLevel(); // StartLevel(); <---- убрали и стало отлично работать
+          //  StartLevel();  <---- убрали и стало отлично работать
         }
         //-----------------------------------------------------------------------------------------------------------
+        
         
         
         //--------------вынесли отписки и паузу-----------------------------
@@ -95,6 +98,8 @@ namespace Runner
             
             // и запустить новый уровень
             StartLevel(); 
+            
+            FindObjectOfType<GamePanel>().PrintLevelText();
         }
     }
 }

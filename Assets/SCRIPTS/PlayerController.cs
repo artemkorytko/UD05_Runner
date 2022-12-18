@@ -36,6 +36,8 @@ namespace Runner
 
         // у АК -  public event Action OnWin;
         public event Action OnDie;
+        
+        public event Action GetCoin;
 
 
         // чтобы понимать, что этот флаг меняется - нужен геттер и сеттер :/ - это я вообще хреново понимаю
@@ -133,13 +135,24 @@ namespace Runner
 
         // ------- ТРИГГЕР ------ без столкноваения -------------------------------------------------------------------
         // ------- для триггера (не пнет чела, но сработает) --- надо шоб был ригибади
-        private void OnTriggerEnter(Collider other) // че за other? ещё нету его вроде
+        private void OnTriggerEnter(Collider other) // че за other?
         {
-            if (other.gameObject)
+
+            Debug.Log("TRIGGER KOZEL: " + other.gameObject.name); 
+            
+            // if (other.gameObject.GetComponent<CoinComponent>())
+            if (other.gameObject.name == "Cylinder")  
+            {
+                GotaCoin();
+            }
+
+            
+            
+            if (other.gameObject.GetComponent<FinishComponent>())
             {
                 Finish();
-                // Dobezal?.Invoke(); // ! КУБ БОЛЬШЕ НЕ РАБОТАЕТ 
             }
+            
         }
 
 
@@ -157,6 +170,7 @@ namespace Runner
                 Died();
             }
 
+            
 
             if (collision.gameObject.GetComponent<WInCubeComponent>())
             {
@@ -188,5 +202,11 @@ namespace Runner
             _animator.SetTrigger(Dance);
             Dobezal?.Invoke();
         }
+        
+        private void GotaCoin()
+        {
+            GetCoin?.Invoke();
+        }
+        
     }
 }
