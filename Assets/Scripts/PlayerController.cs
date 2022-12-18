@@ -19,12 +19,14 @@ public class PlayerController : MonoBehaviour
     private InputHandler _inputHandler; //получаем ссылку на инпутхэндлер чтобы считать какие у него есть данные 
 
     private bool _isActive; //флаг //_isActive по умолчанию false)
+    private int _gottenCoins; //счетчик для полученных монеток
     private static readonly int Run = Animator.StringToHash("Run"); // берет строку(string) "Run" переводит ее в хэш и помещает этот хэш внутрь переменной Run//хэш(конверсия) строчки _animator.SetTrigger(Run);
     private static readonly int Fall = Animator.StringToHash("Fall");
     private static readonly int Dance = Animator.StringToHash("Dance");
 
     public event Action OnWin;  //создали ивент чтобы сделать инвоук
     public event Action OnDead;
+    public event Action<int> EachGottenCoin;
    
     //суть геттера и сеттера в том что считать значение IsActive можем из любого класса, а устанавливаем значение именно тут
     public bool IsActive //флаг который будет говорить что изменилось состояние нашего перса(напр умер, финиш игры),
@@ -117,9 +119,25 @@ public class PlayerController : MonoBehaviour
              / вернется тру или фолс: тру когда получилось получить компонент, фолс - когда не получилось получить компонент 
              WallComponent//отправляем Wallcomponent - компонент который висит на стене => 
             */
+        
+        // если  GetComponent - возвращает тру или фолс 
         {
             Finish(); // если коснулись триггера (то на что повесим FinishComponent) т е получили компонент воллкомпонент след-но
         }
+
+        if (other.gameObject.TryGetComponent(out CoinComponent coinComponent)) /* other - аргумент который 
+        объявляли при создании класса */
+        // TryGetComponent - возвращает объект CoinComponent
+        {
+            coinComponent.gameObject.SetActive(false); //если получили компонент то делаем его неактивным
+            GetCoin(); //метод накапливания полученных монеток
+        }
+    }
+
+    private void GetCoin()
+    {
+        _gottenCoins++;
+        EachGottenCoin?.Invoke(_gottenCoins);//событие каждой полученной монетки
     }
 
     [ContextMenu("Died")] /*добавляю атрибут ContextMenu может создавать дебажное обращение к методу из
