@@ -26,6 +26,7 @@ namespace Runner
 
         public void GenerateLevel()
         {
+            Clear();
             GenerateRoad();
             GeneratePlayer();
             GenerateWalls();

@@ -12,15 +12,35 @@ namespace Runner
 
         private Level _level;
         private Coroutine _coroutine;
+        private UiController _uiController;
+        
 
         private void Awake()
         {
+            _uiController = FindObjectOfType<UiController>();
             _level = Instantiate(levelPrefab, transform);
         }
 
         private void Start()
         {
-            StartLevel();
+            SubscribeUI();
+        }
+
+        private void SubscribeUI()
+        {
+            _uiController.OnStartButtonEvent += StartLevel;
+            _uiController.OnNextButtonEvent += StartLevel;
+        }
+
+        private void OnDestroy()
+        {
+            UnSubsribeUI();
+        }
+
+        private void UnSubsribeUI()
+        {
+            _uiController.OnStartButtonEvent -= StartLevel;
+            _uiController.OnNextButtonEvent -= StartLevel;
         }
 
         private void StartLevel()
@@ -43,14 +63,14 @@ namespace Runner
 
         private IEnumerator WinWithDelay()
         {
+            OnWinn?.Invoke();
             yield return ClearDelay();
-            StartLevel();
         }
 
         private IEnumerator FailWithDelay()
         {
             yield return ClearDelay();
-            StartLevel();
+            OnFAill?.Invoke();
         }
 
         private IEnumerator ClearDelay()
@@ -59,5 +79,8 @@ namespace Runner
             _level.Player.OnDead -= OnDead;
             yield return new WaitForSeconds(delay);
         }
+
+        public event Action OnWinn;
+        public event Action OnFAill;
     }
 }
