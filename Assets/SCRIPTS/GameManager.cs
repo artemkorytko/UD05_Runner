@@ -33,20 +33,23 @@ namespace Runner
         {
             _level.GenerateLevel(); // обратились к функции внутри Level или к компонету на созданном левеле!!!????
             
-                     
             // надо запустить игрока 
             _level.Player.IsActive = true;
                      
             // подписки на события из плеера в PlayerController, ибо он там пересекает и стукается
             _level.Player.Dobezal += OnWin; // у АК тут опять одинаковые слова
-            _level.Player.OnDie += OnDead; 
+            _level.Player.OnDie += OnDead;
+
+            // Начать звук бега: прям сразу ищет компонент и в нем запустили функцию О_о
+            FindObjectOfType<AudioManager>().InitSound();
+            
+            
         }
 
         //------------ методы по событиям --------------------------------------------------------------------------
         private void OnDead()
         {   // надо сделать задержку для того чтобы посмотрели анимацию -> корутины
             StartCoroutine(FailWithdelay());
-            
         }
 
         
@@ -57,14 +60,13 @@ namespace Runner
         }
 
         
-        
-        
         //------- КОРУТИНЫ для задержек - она остановит программу и будет ждать пока отработиает Иелдоператор ------- 
         private IEnumerator WinWithdelay()
         {
             yield return ClearDelay(); 
             
-            StartLevel();
+            // StartLevel(); <---- убрали и стало отлично работать
+           
             // без UI мы хотим запустить новый уровень
             // надо: отписаться от старых событий
 
@@ -74,7 +76,7 @@ namespace Runner
         {
             yield return ClearDelay(); 
             
-            StartLevel();
+          //  StartLevel(); // StartLevel(); <---- убрали и стало отлично работать
         }
         //-----------------------------------------------------------------------------------------------------------
         
@@ -87,7 +89,6 @@ namespace Runner
             // отписаться
             _level.Player.Dobezal -= OnWin; 
             _level.Player.OnDie -= OnDead;
-            
             
             // код отсновит выполнение в этом методе, пока не выполнится это условие
             yield return new WaitForSeconds(delay);

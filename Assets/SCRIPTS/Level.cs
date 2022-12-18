@@ -17,6 +17,7 @@ namespace Runner
         [SerializeField] private GameObject playerPrefab;
         [SerializeField] private GameObject finishPrefab; // финишный кусок дороги
         [SerializeField] private GameObject wallPrefab; // стенка
+        [SerializeField] private GameObject winparticles;
 
         // для расстановки стенок: между ними будет рандомиться расстановка стенок по ширине
         [SerializeField] private float minWallOffset = 3f;
@@ -37,7 +38,9 @@ namespace Runner
         private PlayerController _player; // опять похожих развели >:(
         // и заинкапсулировать её для передачи далее - а куда?
         public PlayerController Player => _player;
+
         
+        private ParticleSystem _winparticles;
         
         
         //на старте генерируем уровень, массивом создаем дорогу и плеера на ней
@@ -97,7 +100,16 @@ namespace Runner
             // transform - назначаем ему родителя 
             // roadLocalPosition - ставим его в это локальное место 
             // Quaternion.identity - нулевой поворот - все значения прямо
+
+            
+            
+            Instantiate(winparticles, roadLocalPosition, Quaternion.identity, transform);
+            _winparticles = winparticles.GetComponent<ParticleSystem>();
+            
+            
         }
+
+       
 
         //------------------------------------------ игрок -------------------------------------------------------------
         private void GeneratePlayer()
@@ -112,9 +124,9 @@ namespace Runner
             
             // из-за того что он тут объект типа "GameObject" - надо получить его компонент PlayerController
             _player = player.GetComponent<PlayerController>();
-            
-            
+            _player.Dobezal += WinSalute;
         }
+        
         
         //----------------------------------------- стены --------------------------------------------------------
         private void GeneratWalls()
@@ -177,12 +189,17 @@ namespace Runner
                         // transform - назначаем ему родителя 
                         // roadLocalPosition - ставим его в это локальное место 
                         // Quaternion.identity - нулевой поворот - все значения прямо
+                        
                     }
 
 
                 }
          //------------------ салют на финише - изнутри префаба куба не работало (почему?), тут работает ---------------
-         
+          private void WinSalute()
+                 {   
+                     Debug.Log("Салют пыщ пыщ");
+                     _winparticles.Play();
+                 }
     }
 
 }
