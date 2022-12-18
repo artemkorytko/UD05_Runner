@@ -50,7 +50,7 @@ MonoBehaviour:
   _roadPartPrefab: {fileID: 239487514265627090, guid: 45e899844ab62ea47a5c93ac0410105a, type: 3}
   _cointPrefab: {fileID: 5382899800854812705, guid: 72148144bbfd89a468cca445dc12cc8c, type: 3}
   _roadPartCount: 10
-  _roadPartLength: 5
+  _roadPartLength: 6
   _roadPartWidth: 6
   _minWallsOffset: 3
   _maxWallsOffset: 5

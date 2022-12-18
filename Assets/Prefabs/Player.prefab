@@ -80,7 +80,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _forwardSpeed: 5
-  _sideSpeed: 9
+  _sideSpeed: 5
   _roadWidth: 6
   _turnRotationAngle: 30
   _lerpSpeed: 5

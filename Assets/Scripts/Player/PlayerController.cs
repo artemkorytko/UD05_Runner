@@ -45,7 +45,11 @@ namespace Runner
             _inputHandler = GetComponent<InputHandler>();
             _animator = GetComponentInChildren<Animator>();
         }
-        
+
+        private void Start()
+        {
+            IsActive = true;
+        }
 
         private void FixedUpdate()
         {
@@ -57,19 +61,33 @@ namespace Runner
 
         private void Move()
         {
+            // Debug.Log(_inputHandler.HorizontalAxis);
+            
             var xOffset = - _inputHandler.HorizontalAxis * _sideSpeed; // знак "-" при его отсутствии нажатие влево будет работать вправо(xOffset - смещение) 
-            var position = _rigidbody.position; // запись первоначальной позиции 
-            position.x += xOffset; // изменение координаты X в напровление движения игрока - передается в _rigidbody.MovePosition();
-            position.x = Mathf.Clamp(position.x, -_roadWidth * 0.5f, _roadWidth * 0.5f); // ограничение движения игрока по оси X в зависимости от ширины дороги
-
+            
             // поворачивается //
             var rotation = _model.localRotation.eulerAngles; // запись углов модели
             rotation.y = Mathf.LerpAngle(rotation.y, xOffset == 0 ? 0 : Mathf.Sign(xOffset) * _turnRotationAngle,  // решить проблему в повороте!!!!!!!сюда смотри!!!!!!!
                 _lerpSpeed * Time.deltaTime); // плавное(LerpAngle) изменение поворота по оси Y(лево/право) в зависимости от xOffset(который определяет навровление поворота)
             // Mathf.Sign(xOffset) возвращает знак + или - нашего xOffset.
-            _model.localRotation = Quaternion.Euler(rotation);  // поворачивается переводим угол eulerAngles в Quaternion
+            
+
+            // if (_inputHandler.HorizontalAxis == 0)  ........ xOffset == 0 ? 0 : Mathf.Sign(xOffset) * _turnRotationAngle 
+            // {
+            //     rotation.y = Mathf.LerpAngle(rotation.y, 0, _lerpSpeed * Time.deltaTime);
+            // }
+            // else
+            // {
+            //     rotation.y = Mathf.LerpAngle(rotation.y, Mathf.Sign(xOffset) * _turnRotationAngle,
+            //         _lerpSpeed * Time.deltaTime);
+            // }
+             _model.localRotation = Quaternion.Euler(rotation);  // поворачивается переводим угол eulerAngles в Quaternion
+             
             
             // идет //
+            var position = _rigidbody.position; // запись первоначальной позиции 
+            position.x += xOffset; // изменение координаты X в напровление движения игрока - передается в _rigidbody.MovePosition();
+            position.x = Mathf.Clamp(position.x, -_roadWidth * 0.5f, _roadWidth * 0.5f); // ограничение движения игрока по оси X в зависимости от ширины дороги
             _rigidbody.MovePosition(position + transform.forward * (_forwardSpeed * Time.deltaTime));  // идет (к position вперед(transform.forward (forward(x=0, y=0, z=1)))
         }
 

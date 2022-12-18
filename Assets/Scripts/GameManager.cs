@@ -11,19 +11,21 @@ namespace Runner
         
         [SerializeField] private Level _levelPrefab;
         [SerializeField] private float _delay = 1f;
-        
+
+        //private PlayerController _player;
         private UIController _uiController;
         private Level _level;
+        
         private int _currentlevel;
         private int _coints;
         
         public event Action<int> OnAddCoint;
         public event Action Win;
         public event Action Fail;
+        public event Action<int> OnNextLevelIndex;
 
-        
-        public event Action<int> OnNextLevelIndex; 
-        
+      //  public PlayerController Player => _player;
+
         private int LevelIndex
         {
             get => _currentlevel;
@@ -33,32 +35,22 @@ namespace Runner
                 OnNextLevelIndex?.Invoke(LevelIndex);
             }
         }
-
-        public int Coints
-        {
-            get => _coints;
-            set
-            {
-                _coints = value; 
-                OnAddCoint?.Invoke(Coints);
-            }
-        }
-
+        
         private void Awake()
         {
-            LoadData();
             _uiController = FindObjectOfType<UIController>();
         }
 
         private void Start()
         {
+            LoadData();
             _uiController.OnStartGame += StartGame;
             _uiController.OnRestartLevel += RestartCurrentLevel;
         }
 
         private void OnDestroy()
         {
-            SaveData(SAVE_COINT, Coints);
+            SaveData(SAVE_COINT, _coints);
             SaveData(SAVE_LEVEL, LevelIndex);
             
             _uiController.OnStartGame -= StartGame;
@@ -80,7 +72,8 @@ namespace Runner
         private void StartLevel()
         {
             _level.GenegateLevel();
-            _level.Player.IsActive = true; // тут нужно поправить тип ДЗ
+            _level.Player.IsActive = true; 
+            //_player = _level.Player;
             
             _level.Player.OnWin += OnWin;
             _level.Player.OnDead += OnDead;
@@ -91,6 +84,7 @@ namespace Runner
         {
             _level.RestartLevel();
             _level.Player.IsActive = true;
+           // _player = _level.Player;
             
             _level.Player.OnWin += OnWin;
             _level.Player.OnDead += OnDead;
@@ -99,11 +93,13 @@ namespace Runner
 
         private void AddCoint(int coint)
         {
-            Coints++;
+            _coints++;
+            OnAddCoint?.Invoke(_coints);
         }
 
         private void OnDead()
         {
+            
             StartCoroutine(FailWithDelay());  // запуск карутины (карутины привязаны к компаненту, если я выключу GameManager, то карутира также откл)
             //StopCoroutine(); - останавливает карутину
             //StopAllCoroutines(); - остановить все карутины (данный случай в компаненте GameManager)

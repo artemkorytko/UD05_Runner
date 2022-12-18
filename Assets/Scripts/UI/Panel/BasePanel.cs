@@ -20,7 +20,7 @@ namespace Runner
         }
 
         private void OnDestroy()
-        { 
+        {
             _button.onClick.RemoveListener(OnButtonClick);
         }
 
