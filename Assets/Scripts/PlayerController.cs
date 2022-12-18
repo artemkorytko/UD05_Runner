@@ -5,7 +5,8 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
     { 
         [SerializeField] private float forwardSpeed = 5f;
-        [SerializeField] private float roadWidth = 5f;
+        [SerializeField] private float sideSpeed = 10f;
+        [SerializeField] private float roadWidth = 6f;
         [SerializeField] private float turnRotationAngle = 30f;
         [SerializeField] private float lerpSpeed = 5f;
         [SerializeField] private Transform model;
@@ -18,6 +19,9 @@ public class PlayerController : MonoBehaviour
         private static readonly int Run = Animator.StringToHash("Run");
         private static readonly int Fall = Animator.StringToHash("Fall");
         private static readonly int Dance = Animator.StringToHash("Dance");
+
+        public event Action OnWin;
+        public event Action OnDead;
 
         public bool IsActive
         {
@@ -38,12 +42,7 @@ public class PlayerController : MonoBehaviour
             _inputHandler = GetComponent<InputHandler>();
             _rigidbody = GetComponent<Rigidbody>();
         }
-
-        private void Start()
-        {
-            IsActive = true;
-        }
-
+        
         private void FixedUpdate()
         {
             if (!IsActive)
@@ -53,9 +52,10 @@ public class PlayerController : MonoBehaviour
         
         private void Move()
         {
-            var xOffset = -_inputHandler.HorizontalAxis * roadWidth;
+            var xOffset = -_inputHandler.HorizontalAxis * sideSpeed;
             var position = _rigidbody.position;
             position.x += xOffset;
+            position.x = Mathf.Clamp(position.x, -roadWidth * 0.5f, roadWidth * 0.5f);
 
             var rotation = model.localRotation.eulerAngles;
             rotation.y = Mathf.LerpAngle(rotation.y, xOffset == 0 ? 0 : Mathf.Sign(xOffset) * turnRotationAngle, lerpSpeed * Time.deltaTime);
@@ -69,6 +69,7 @@ public class PlayerController : MonoBehaviour
             if (collision.gameObject.GetComponent<WallComponent>())
             {
                 Died();
+                OnDead?.Invoke();
             }
         }
 
@@ -76,7 +77,8 @@ public class PlayerController : MonoBehaviour
         {
             if (other.gameObject.GetComponent<FinishComponent>())
             {
-                
+                Finish();
+                OnWin?.Invoke();
             }
         }
         
