@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 namespace Runner
@@ -10,29 +11,33 @@ namespace Runner
         [SerializeField] private GameObject _finihsPrefab;
         [SerializeField] private GameObject _wallPrefab;
         [SerializeField] private GameObject _roadPartPrefab;
-        [SerializeField] private GameObject _cointPrefab;
+        [SerializeField] private GameObject _coinPrefab;
+        [SerializeField] private ParticleSystem _particlePrefab;
 
-        [Header("Settings Road")] [SerializeField]
-        private int _roadPartCount = 10;
-
+        [Header("Settings Road")] 
+        [SerializeField] private int _roadPartCount = 10;
         [SerializeField] private float _roadPartLength = 6f;
         [SerializeField] private float _roadPartWidth = 6f;
 
-        [Header("Settings Walls")] [SerializeField]
-        private float _minWallsOffset = 3f;
-
+        [Header("Settings Walls")] 
+        [SerializeField]private float _minWallsOffset = 3f;
         [SerializeField] private float _maxWallsOffset = 5f;
 
+        [Header(("Particle System"))] [SerializeField]
+        private float _distanceBetweenParticleAndFinish = 5f;
+        
         private PlayerController _player;
-
+        private ParticleSystem _particle;
+        
         public PlayerController Player => _player; // ссылка на игрока
+        public ParticleSystem ParticlePrefab => _particle;
 
         public void GenegateLevel()
         {
             Clear();
-            GenegateRoad();
+            GenegateRoadAndParticle();
             GenegatePlayer();
-            GenegateWallsAndCoits();
+            GenegateWallsAndCois();
         }
 
         private void Clear()
@@ -51,7 +56,7 @@ namespace Runner
             GenegatePlayer();
         }
 
-        private void GenegateRoad()
+        private void GenegateRoadAndParticle()
         {
             var roadLocalPosition = Vector3.zero;
             for (int i = 0; i < _roadPartCount; i++)
@@ -60,22 +65,27 @@ namespace Runner
                 road.transform.localPosition = roadLocalPosition;
                 roadLocalPosition.z += _roadPartLength;
             }
-
             Instantiate(_finihsPrefab, roadLocalPosition, Quaternion.identity, transform);
+
+            // тут партикал
+            var particlePosition = Vector3.zero;
+            particlePosition.z = roadLocalPosition.z + _distanceBetweenParticleAndFinish;
+            
+            _particle = Instantiate(_particlePrefab, particlePosition, Quaternion.Euler(-90,0,0), transform);
+            _particle.Stop();
+          
         }
 
         private void GenegatePlayer()
         {
             var player = Instantiate(_playerPrefab, transform);
-            player.transform.localPosition =
-                new Vector3(0f, 0f,
-                    _roadPartLength * 0.5f); //  * 0.5f - стараемся всегда заменять деление(/) на умножение(*) !!!
+            player.transform.localPosition = new Vector3(0f, 0f, _roadPartLength * 0.5f); //  * 0.5f - стараемся всегда заменять деление(/) на умножение(*) !!!
 
             _player = player.GetComponent<PlayerController>();
         }
 
 
-        private void GenegateWallsAndCoits()
+        private void GenegateWallsAndCois()
         {
             var fullLength = _roadPartCount * _roadPartLength;
             var currentLength = _roadPartLength * 2f;
@@ -101,15 +111,15 @@ namespace Runner
                 localPositionWall.z = currentLength;
 
                 // для монет по X and Z
-                var randomPositionCointX = Random.Range(0, 3);
-                var cointPositionX = startPosX + wallOffsetX * randomPositionCointX;
+                var randomPositionCoinX = Random.Range(0, 3);
+                var coinPositionX = startPosX + wallOffsetX * randomPositionCoinX;
 
-                var localPositionCoint = Vector3.zero;
-                localPositionCoint.z = currentLength + 2f;
-                localPositionCoint.x = cointPositionX;
+                var localPositionCoin = Vector3.zero;
+                localPositionCoin.z = currentLength + 2f;
+                localPositionCoin.x = coinPositionX;
 
                 Instantiate(_wallPrefab, localPositionWall, Quaternion.identity, transform);
-                Instantiate(_cointPrefab, localPositionCoint, Quaternion.identity, transform);
+                Instantiate(_coinPrefab, localPositionCoin, Quaternion.identity, transform);
             }
 
         }

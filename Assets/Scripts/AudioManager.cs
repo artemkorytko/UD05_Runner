@@ -1,11 +1,12 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Runner
 {
     public class AudioManager : MonoBehaviour
     {
-        [SerializeField] private AudioClip _audioAddCoint;
+        [SerializeField] private AudioClip _audioAddCoin;
         [SerializeField] private AudioClip _audioCollisionWall;
         [SerializeField] private AudioClip _audioCollisionFinish;
 
@@ -19,14 +20,14 @@ namespace Runner
         }
         private void Start()
         {
-            _gameManager.OnAddCoint += OnAudioAddCoint;
+            _gameManager.OnAddCoin += OnAudioAddCoin;
             _gameManager.Win += OnAudioWin;
             _gameManager.Fail += OnAudioFail;
         }
 
         private void OnDestroy()
         {
-            _gameManager.OnAddCoint -= OnAudioAddCoint;
+            _gameManager.OnAddCoin -= OnAudioAddCoin;
             _gameManager.Win -= OnAudioWin;
             _gameManager.Fail -= OnAudioFail;
         }
@@ -41,9 +42,9 @@ namespace Runner
             _audioSource.PlayOneShot(_audioCollisionFinish);
         }
 
-        private void OnAudioAddCoint(int obj)
+        private void OnAudioAddCoin(int obj)
         {
-            _audioSource.PlayOneShot(_audioAddCoint);
+            _audioSource.PlayOneShot(_audioAddCoin);
         }
     }
 }

@@ -48,9 +48,11 @@ MonoBehaviour:
   _finihsPrefab: {fileID: 239487514265627090, guid: f12c28ab3f6309345bcb31761ddf602e, type: 3}
   _wallPrefab: {fileID: 2470673451689785067, guid: 50723927247497a4395f92b69c1e8299, type: 3}
   _roadPartPrefab: {fileID: 239487514265627090, guid: 45e899844ab62ea47a5c93ac0410105a, type: 3}
-  _cointPrefab: {fileID: 5382899800854812705, guid: 72148144bbfd89a468cca445dc12cc8c, type: 3}
+  _coinPrefab: {fileID: 5382899800854812705, guid: 72148144bbfd89a468cca445dc12cc8c, type: 3}
+  _particlePrefab: {fileID: 723665017117118221, guid: 44e2f9266fc16c5429c81c109deac980, type: 3}
   _roadPartCount: 10
   _roadPartLength: 6
   _roadPartWidth: 6
   _minWallsOffset: 3
   _maxWallsOffset: 5
+  _distanceBetweenParticleAndFinish: 30

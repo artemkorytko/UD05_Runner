@@ -107,7 +107,6 @@ namespace Runner
                 AddCoits();
                 coinComponent.gameObject.SetActive(false);
             }
-
         }
 
         private void AddCoits()

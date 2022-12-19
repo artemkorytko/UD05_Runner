@@ -1968,7 +1968,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _levelPrefab: {fileID: 4472907757193944008, guid: ec5efa49e423b9341ad015c4e1ed3988, type: 3}
-  _delay: 3
+  _delay: 5
 --- !u!4 &2003347240
 Transform:
   m_ObjectHideFlags: 0
@@ -2434,7 +2434,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ecfc18208084f7a838deb93b5503dc7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _audioAddCoint: {fileID: 8300000, guid: 52320e590bf774734a288886eba557ba, type: 3}
+  _audioAddCoin: {fileID: 8300000, guid: 52320e590bf774734a288886eba557ba, type: 3}
   _audioCollisionWall: {fileID: 8300000, guid: b99da9a57308d4ba1bee1cf1d9038376, type: 3}
   _audioCollisionFinish: {fileID: 8300000, guid: dc6614beca09347ec9b258f12d154bdd, type: 3}
 --- !u!82 &2069548842

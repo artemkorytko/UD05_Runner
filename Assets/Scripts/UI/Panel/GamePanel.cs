@@ -17,13 +17,13 @@ namespace Runner
         }
         private void OnEnable()
         {
-            _gameManager.OnAddCoint += OnAddCoint;
+            _gameManager.OnAddCoin += OnAddCoin;
             _gameManager.OnNextLevelIndex += OnLevelIndex;
         }
 
         private void OnDisable()
         {
-            _gameManager.OnAddCoint -= OnAddCoint;
+            _gameManager.OnAddCoin -= OnAddCoin;
             _gameManager.OnNextLevelIndex -= OnLevelIndex;
         }
         
@@ -32,7 +32,7 @@ namespace Runner
             _textcurrentLevel.text = $"Current Level: {index}";
         }
         
-        private void OnAddCoint(int coint)
+        private void OnAddCoin(int coint)
         {
             _textCoint.text = coint.ToString();
         }

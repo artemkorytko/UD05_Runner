@@ -7,7 +7,7 @@ namespace Runner
     public class GameManager : MonoBehaviour
     {
         private const string SAVE_LEVEL = "level_index";
-        private const string SAVE_COINT = "Coints";
+        private const string SAVE_COIN = "Coints";
         
         [SerializeField] private Level _levelPrefab;
         [SerializeField] private float _delay = 1f;
@@ -17,9 +17,9 @@ namespace Runner
         private Level _level;
         
         private int _currentlevel;
-        private int _coints;
+        private int _coins;
         
-        public event Action<int> OnAddCoint;
+        public event Action<int> OnAddCoin;
         public event Action Win;
         public event Action Fail;
         public event Action<int> OnNextLevelIndex;
@@ -50,7 +50,7 @@ namespace Runner
 
         private void OnDestroy()
         {
-            SaveData(SAVE_COINT, _coints);
+            SaveData(SAVE_COIN, _coins);
             SaveData(SAVE_LEVEL, LevelIndex);
             
             _uiController.OnStartGame -= StartGame;
@@ -91,10 +91,10 @@ namespace Runner
             _level.Player.OnCoint += AddCoint; 
         }
 
-        private void AddCoint(int coint)
+        private void AddCoint(int coin)
         {
-            _coints++;
-            OnAddCoint?.Invoke(_coints);
+            _coins++;
+            OnAddCoin?.Invoke(_coins);
         }
 
         private void OnDead()
@@ -107,6 +107,7 @@ namespace Runner
 
         private void OnWin()
         {
+            _level.ParticlePrefab.Play();
             StartCoroutine(WinWithDelay());
         }
 
@@ -115,6 +116,7 @@ namespace Runner
             yield return ClearDelay();
             Win?.Invoke(); 
         }
+
 
         private IEnumerator FailWithDelay()
         {
@@ -139,7 +141,7 @@ namespace Runner
         private void LoadData() 
         {
             _currentlevel = PlayerPrefs.GetInt(SAVE_LEVEL, 0);
-            _coints = PlayerPrefs.GetInt(SAVE_COINT, 0);
+            _coins = PlayerPrefs.GetInt(SAVE_COIN, 0);
         }
     }
 }
