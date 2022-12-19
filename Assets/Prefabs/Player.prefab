@@ -80,9 +80,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _forwardSpeed: 5
-  _sideSpeed: 5
+  _sideSpeed: 6
   _roadWidth: 6
-  _turnRotationAngle: 30
+  _turnRotationAngle: 45
   _lerpSpeed: 5
   _model: {fileID: 4025961104276223}
 --- !u!114 &541827141616330789
@@ -97,6 +97,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1711692b9a3149bc9be1720d898fe9a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _isHold: 0
 --- !u!1 &541827142654970849
 GameObject:
   m_ObjectHideFlags: 0

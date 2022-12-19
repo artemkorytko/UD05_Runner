@@ -8,7 +8,7 @@ namespace Runner
 
         private float _prevPosX; // переменная для фиксации(записи) где была нажата ЛКМ 
         private float _relativeOffset; // переменная для того чтоб не было разницы смещения (влево/враво), в зависимости от ширины экрана девайса) т.е идет "уравнение(24д = 8д)" экранов 
-        private bool _isHold; // флаг для замены Input.GetMouseButton(0) 3ий if в Update
+        public bool _isHold; // флаг для замены Input.GetMouseButton(0) 3ий if в Update
         private int _screenWidth; // переменная для записи ширины эрана. 
 
         public float HorizontalAxis => _relativeOffset; // свойство для передачи _relativeOffset в PlayerController, в момент когда произошло изменение переменной (_relativeOffset)

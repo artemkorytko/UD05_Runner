@@ -55,4 +55,4 @@ MonoBehaviour:
   _roadPartWidth: 6
   _minWallsOffset: 3
   _maxWallsOffset: 5
-  _distanceBetweenParticleAndFinish: 30
+  _distanceBetweenParticleAndFinish: 35

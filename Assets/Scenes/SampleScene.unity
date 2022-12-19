@@ -1968,7 +1968,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _levelPrefab: {fileID: 4472907757193944008, guid: ec5efa49e423b9341ad015c4e1ed3988, type: 3}
-  _delay: 5
+  _deleyAtFail: 5
 --- !u!4 &2003347240
 Transform:
   m_ObjectHideFlags: 0

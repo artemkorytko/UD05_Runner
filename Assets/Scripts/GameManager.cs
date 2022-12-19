@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Runner
 {
@@ -10,15 +11,15 @@ namespace Runner
         private const string SAVE_COIN = "Coints";
         
         [SerializeField] private Level _levelPrefab;
-        [SerializeField] private float _delay = 1f;
-
+        [SerializeField] private float _deleyAtFail;
+        
         //private PlayerController _player;
         private UIController _uiController;
         private Level _level;
         
         private int _currentlevel;
         private int _coins;
-        
+
         public event Action<int> OnAddCoin;
         public event Action Win;
         public event Action Fail;
@@ -44,8 +45,10 @@ namespace Runner
         private void Start()
         {
             LoadData();
+            
             _uiController.OnStartGame += StartGame;
             _uiController.OnRestartLevel += RestartCurrentLevel;
+            
         }
 
         private void OnDestroy()
@@ -59,14 +62,22 @@ namespace Runner
         
         private void StartGame()
         {
+            
             if (_level != null)
             {
                 Destroy(_level.gameObject);
                 LevelIndex++;
             }
-
+            else // для передачи данных в GamePanel(сработает 1 раз)
+            {
+                OnAddCoin?.Invoke(_coins);
+                OnNextLevelIndex?.Invoke(_currentlevel);
+                //Debug.Log("events coin and levelIndex");
+            }
+            
             _level = Instantiate(_levelPrefab, transform);
             StartLevel();
+            
         }
 
         private void StartLevel()
@@ -99,7 +110,6 @@ namespace Runner
 
         private void OnDead()
         {
-            
             StartCoroutine(FailWithDelay());  // запуск карутины (карутины привязаны к компаненту, если я выключу GameManager, то карутира также откл)
             //StopCoroutine(); - останавливает карутину
             //StopAllCoroutines(); - остановить все карутины (данный случай в компаненте GameManager)
@@ -113,24 +123,26 @@ namespace Runner
 
         private IEnumerator WinWithDelay() // карутина это соПрограмма которая запустилась ПАРАЛЛЕЛЬНО нам!!!!!!!!!
         {
-            yield return ClearDelay();
+            yield return new WaitWhile(() => _level.ParticlePrefab.isPlaying);
+            yield return Clear();
             Win?.Invoke(); 
         }
 
 
         private IEnumerator FailWithDelay()
         {
-            yield return ClearDelay(); // запуск карутины тип как StartCoroutine(ClearDelay());
+            yield return new WaitForSeconds(_deleyAtFail);
+            yield return Clear(); // запуск карутины тип как StartCoroutine(ClearDelay());
             Fail?.Invoke();
         }
 
-        private IEnumerator ClearDelay()
+        private IEnumerator Clear()
         {
-            yield return new WaitForSeconds(_delay);
-            
             _level.Player.OnWin -= OnWin;
             _level.Player.OnDead -= OnDead;
             _level.Player.OnCoint -= AddCoint;
+            
+            yield return null;
         }
         
         private void SaveData(string key, int index)  

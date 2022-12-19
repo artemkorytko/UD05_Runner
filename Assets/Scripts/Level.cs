@@ -70,7 +70,7 @@ namespace Runner
             // тут партикал
             var particlePosition = Vector3.zero;
             particlePosition.z = roadLocalPosition.z + _distanceBetweenParticleAndFinish;
-            
+            particlePosition.y = -20f;
             _particle = Instantiate(_particlePrefab, particlePosition, Quaternion.Euler(-90,0,0), transform);
             _particle.Stop();
           
@@ -111,11 +111,11 @@ namespace Runner
                 localPositionWall.z = currentLength;
 
                 // для монет по X and Z
-                var randomPositionCoinX = Random.Range(0, 3);
-                var coinPositionX = startPosX + wallOffsetX * randomPositionCoinX;
+                //var randomPositionCoinX = Random.Range(0, 3);
+                var coinPositionX = startPosX + wallOffsetX * (randomPositionX != 0 ? randomPositionX != 2  ? 0 : 1 : 2);
 
                 var localPositionCoin = Vector3.zero;
-                localPositionCoin.z = currentLength + 2f;
+                localPositionCoin.z = currentLength;// + 2f;
                 localPositionCoin.x = coinPositionX;
 
                 Instantiate(_wallPrefab, localPositionWall, Quaternion.identity, transform);

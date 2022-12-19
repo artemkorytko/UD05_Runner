@@ -21,6 +21,7 @@ namespace Runner
         private static readonly int Run = Animator.StringToHash("Run");
         private static readonly int Fall = Animator.StringToHash("Fall");
         private static readonly int Dance = Animator.StringToHash("Dance");
+        
 
         public event Action OnWin;
         public event Action OnDead;
@@ -67,7 +68,7 @@ namespace Runner
             
             // поворачивается //
             var rotation = _model.localRotation.eulerAngles; // запись углов модели
-            rotation.y = Mathf.LerpAngle(rotation.y, xOffset == 0 ? 0 : Mathf.Sign(xOffset) * _turnRotationAngle,  // решить проблему в повороте!!!!!!!сюда смотри!!!!!!!
+            rotation.y = Mathf.LerpAngle(rotation.y, _inputHandler._isHold  ?  Mathf.Sign(xOffset) * _turnRotationAngle : 0,  // решить проблему в повороте!!!!!!!сюда смотри!!!!!!!
                 _lerpSpeed * Time.deltaTime); // плавное(LerpAngle) изменение поворота по оси Y(лево/право) в зависимости от xOffset(который определяет навровление поворота)
             // Mathf.Sign(xOffset) возвращает знак + или - нашего xOffset.
             
