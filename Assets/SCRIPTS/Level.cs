@@ -36,6 +36,8 @@ namespace Runner
 
         // заводим локальную ссылку на плеера для GeneratePlayer
         private PlayerController _player; // опять похожих развели >:(
+        private GameManager _gamemanagerfile;
+
 
         // и заинкапсулировать её для передачи далее - ###############################[ а куда?  ]
         public PlayerController Player => _player;
@@ -46,6 +48,7 @@ namespace Runner
         // счетчик уровня
         public int currentlevel = 0;
 
+        
 
         //----------------переменные для стен и монеток---------------------
 
@@ -53,9 +56,9 @@ namespace Runner
         private float currentLength;
         private float wallOffsetX;
         private float startPosX;
-        
+
         // ------------------
-        
+
         // словарь для монет??
         // Dictionary<string, GameObject> coinDict = new Dictionary<string, GameObject>();
 
@@ -65,6 +68,7 @@ namespace Runner
         // {
         //     GenerateLevel(); // пока дебажно тут, потом надо засунуть в гейм менеджер
         // }
+        
 
 
         public void GenerateLevel()
@@ -141,9 +145,12 @@ namespace Runner
             player.transform.localPosition = new Vector3(0, 0, roadPartLength * 0.5f);
 
             // из-за того что он тут объект типа "GameObject" - надо получить его компонент PlayerController
-            _player = player.GetComponent<PlayerController>();
+            _player = FindObjectOfType<PlayerController>();
             _player.Dobezal += WinSalute;
+            
         }
+
+        
 
 
         //----------------------------------------- стены --------------------------------------------------------
@@ -211,11 +218,10 @@ namespace Runner
         }
 
         //------------------ МОНЕТКИ ----------------------------------------------------------------------------------
-        
-        
+
+
         private void GenerateCoins()
         {
-            Debug.Log("Монетки начали генерацию");
             fulllength = roadPartCount * roadPartLength; // 10 частей * 5 = 50
             currentLength = roadPartLength * 2f; // (или просто 2) стартуем с позиции 10
             //wallOffsetX = roadPartWigth * 0.33333f; // 2 
@@ -223,7 +229,7 @@ namespace Runner
 
             // clear coins Dict
             // coinDict.Clear();
-            
+
             int counter = 1;
             // скопировала со cтен
             while (currentLength < fulllength) // while < 50 --- и минус пять в конце
@@ -245,16 +251,16 @@ namespace Runner
                 // длину надо заклепить. Clamp - ограничить в доапазоне (входной параметр/кого держим, от, до)
                 // чтобы она не вышла после добавлений за пределы максимальной длины
                 currentLength = Mathf.Clamp(currentLength, 0, fulllength); // not > 50
-                
+
                 var localPosition = Vector3.zero; //  новая позиция 0,0,0
                 localPosition.x = 0; // -1, 0, 0
-                localPosition.z = currentLength;  // localPosition.z + counter * 2; // -1, 0, 14.3
-                
+                localPosition.z = currentLength; // localPosition.z + counter * 2; // -1, 0, 14.3
+
 
                 // создаем в рядок
                 GameObject thisCoin = Instantiate(coinPrefab, localPosition, Quaternion.identity, transform);
-                
-                
+
+
                 counter++;
             }
         }
@@ -265,6 +271,12 @@ namespace Runner
         {
             Debug.Log("Салют пыщ пыщ");
             _winparticles.Play(); //  РАБОТАЕТ НАКОНЕЦ!
+        }
+
+
+        private void OnDestroy()
+        {
+            _player.Dobezal -= WinSalute;
         }
     }
 }

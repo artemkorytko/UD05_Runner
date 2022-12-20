@@ -26,7 +26,6 @@ namespace Runner
         {
             if (coin == this)
             {
-                Debug.Log("взял монетку");
                 gameObject.SetActive(false);
             }
             //Destroy(transform.GetChild(i).GameObject()); - попробовать что ли

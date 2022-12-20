@@ -145,7 +145,7 @@ namespace Runner
             //NEW
             if (other.gameObject.TryGetComponent(out CoinComponent coin))
             {
-                Debug.Log("TryGetComponent: " + coin.name);
+                //Debug.Log("TryGetComponent: " + coin.name);
                 GotaCoin(coin);
             }
 
@@ -188,9 +188,7 @@ namespace Runner
             // {
             //     Finish();
             // }
-
-
-            Debug.Log("Collision Enter"); // всего есть три типа, оставаться и выйти из коллизии 
+            //Debug.Log("Collision Enter"); // всего есть три типа, оставаться и выйти из коллизии 
         }
 
 

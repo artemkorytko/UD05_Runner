@@ -14,19 +14,38 @@ namespace Runner
         [SerializeField] private float delay = 1f;
 
         private Level _level;
+        private PlayerController _playercontrollerfile;
 
-        public event Action LevelChanged;
+        public int howMuchCoins = 0; //считаем монетки ЗА ВСЮ ИГРУ
+        
+
+        public event Action LevelChanged; //событие для передачи на панель
+        public event Action CoinsEncreqased; //событие для передачи на панель
 
         private void Awake()
         {
             _level = Instantiate(levelPrefab, transform); // #######################[ внутрь текущего трансформа ??? ]
+            
         }
 
-        // пока на старте потом рпо кнопке
+        // пока на старте потом по кнопке
         private void Start()
         {
             StartLevel(); //см. ниже, вынесли их чтобы не повторять. ПОТОМ ИЗ КНОПКИ
         }
+
+        
+        
+        
+        //----------------------пытаюсь тут всунуть увеличение количества монеток. ОНО У МЕНЯ ОБЩЕЕ, НА ВСЕ УРОВНИ------
+        public void PlusPlus(CoinComponent somewordwasCoin)
+        {
+            howMuchCoins++;
+            CoinsEncreqased?.Invoke();
+        }
+
+
+
 
         // выносим это в отдельный метод ибо левел генерится много раз
 
@@ -40,6 +59,10 @@ namespace Runner
             // подписки на события из плеера в PlayerController, ибо он там пересекает и стукается
             _level.Player.Dobezal += OnWin; // у АК тут опять одинаковые слова
             _level.Player.OnDie += OnDead;
+            
+            // подписка для счетчика монет
+            _playercontrollerfile = FindObjectOfType<PlayerController>();
+            _playercontrollerfile.GetCoin += PlusPlus;
 
             // Начать звук бега: прям сразу ищет компонент и в нем запустили функцию О_о
             AudioManager audioManager = FindObjectOfType<AudioManager>();

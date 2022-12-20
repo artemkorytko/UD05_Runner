@@ -64,7 +64,7 @@ namespace Runner
          private void CoinSoundFunction(CoinComponent somewordwasCoin)
          {
             _mainAudiosource.PlayOneShot(coinsound);
-            Debug.Log("Монетка бздынь");
+            // Debug.Log("Монетка бздынь");
          }
          
          
