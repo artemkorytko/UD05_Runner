@@ -19,8 +19,8 @@ namespace Runner
 
         private bool Topat = true;
         private float stepSpeed = 0.4f;
-        private AudioSource _audioSource;
-        private AudioSource _playerstepsound;
+        private AudioSource _mainAudiosource;
+        private AudioSource _playerAudiosource;
 
         private PlayerController _playercontrollerfile;
         
@@ -28,7 +28,7 @@ namespace Runner
 
         private void Awake()
         {
-            _audioSource = GetComponent<AudioSource>();
+            _mainAudiosource = GetComponent<AudioSource>();
         }
         
         public void InitSound()
@@ -39,19 +39,16 @@ namespace Runner
             _playercontrollerfile.GetCoin += CoinSoundFunction;
             Topat = true;
             
-            _playerstepsound = _playercontrollerfile.GetComponent<AudioSource>();
+            _playerAudiosource = _playercontrollerfile.GetComponent<AudioSource>();
             StepSoundFunction();
         }
-
-       
-
 
         //------------ отдельные функции со звуками --------------------
         private void WinSoundFunction()
         {
             Topat = false;
             
-            _audioSource.PlayOneShot(winsound);
+            _mainAudiosource.PlayOneShot(winsound);
             //Debug.Log("Звук победы");
         }
 
@@ -59,14 +56,14 @@ namespace Runner
         private void FallSoundFunction()
         {
             Topat = false;
-            _audioSource.PlayOneShot(fallsound);
+            _mainAudiosource.PlayOneShot(fallsound);
             //Debug.Log("Звук упал");
         }
 
         
-         private void CoinSoundFunction()
+         private void CoinSoundFunction(CoinComponent somewordwasCoin)
          {
-            _audioSource.PlayOneShot(coinsound);
+            _mainAudiosource.PlayOneShot(coinsound);
             Debug.Log("Монетка бздынь");
          }
          
@@ -82,11 +79,12 @@ namespace Runner
                 
                 while (Topat) // бесконечный цикл топания
                 {
-                    _playerstepsound.pitch = Random.Range(0.8f, 1.2f); // не унылая тональность топания
-                    _playerstepsound.Play();
+                    _playerAudiosource.pitch = Random.Range(0.8f, 1.2f); // не унылая тональность топания
+                    _playerAudiosource.Play();
                     yield return new WaitForSeconds(stepSpeed);
                 }
             }
         }
+        
     } // close class
 }

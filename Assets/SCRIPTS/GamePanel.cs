@@ -31,5 +31,10 @@ namespace Runner
 
             leveltext.text = $"Level {whattoprintIntoLevel} ";
         }
+
+        private void OnDestroy()
+        {
+            _gamemanagerfile.LevelChanged -= PrintLevelText;
+        }
     }
 }

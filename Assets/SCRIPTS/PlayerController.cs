@@ -36,8 +36,9 @@ namespace Runner
 
         // у АК -  public event Action OnWin;
         public event Action OnDie;
-        
-        public event Action GetCoin;
+
+        // ыыыы
+        public event Action<CoinComponent> GetCoin;
 
 
         // чтобы понимать, что этот флаг меняется - нужен геттер и сеттер :/ - это я вообще хреново понимаю
@@ -137,27 +138,33 @@ namespace Runner
         // ------- для триггера (не пнет чела, но сработает) --- надо шоб был ригибади
         private void OnTriggerEnter(Collider other) // че за other?
         {
+            Debug.Log("TRIGGER KOZEL: " + other.gameObject.name);
 
-            Debug.Log("TRIGGER KOZEL: " + other.gameObject.name); 
-            
             // if (other.gameObject.GetComponent<CoinComponent>())
 
-            if (other.gameObject.name == "Cylinder")
+            //NEW
+            if (other.gameObject.TryGetComponent(out CoinComponent coin))
             {
-                // ##################################### пыталась узнать имя парента (монета>цилиндр) :/ 
-                //string st = other.GetComponentInParent<GameObject>().name;
-                //Debug.Log(st);
-                
-                GotaCoin();
+                Debug.Log("TryGetComponent: " + coin.name);
+                GotaCoin(coin);
             }
 
-            
-            
+
+            //работало
+            // if (other.gameObject.name == "Cylinder")
+            // {
+            //     // ##################################### пыталась узнать имя парента (монета>цилиндр) :/ 
+            //     //string st = other.GetComponentInParent<GameObject>().name;
+            //     //Debug.Log(st);
+            //     
+            //     GotaCoin();
+            // }
+
+
             if (other.gameObject.GetComponent<FinishComponent>())
             {
                 Finish();
             }
-            
         }
 
 
@@ -175,12 +182,12 @@ namespace Runner
                 Died();
             }
 
-            
 
-            if (collision.gameObject.GetComponent<WInCubeComponent>())
-            {
-                Finish();
-            }
+            // изначально он ударялся в кубик
+            // if (collision.gameObject.GetComponent<WInCubeComponent>())
+            // {
+            //     Finish();
+            // }
 
 
             Debug.Log("Collision Enter"); // всего есть три типа, оставаться и выйти из коллизии 
@@ -190,7 +197,7 @@ namespace Runner
         //------------------ методы в которых меняется анимация чувачка ------------------
 
         [ContextMenu("Died")] // это вылезет правой кнопкой из скрипта в инспекторе - для дебагов метода 
-        
+
         //дабы проверить что метод работает
         private void Died()
         {
@@ -207,11 +214,10 @@ namespace Runner
             _animator.SetTrigger(Dance);
             Dobezal?.Invoke();
         }
-        
-        private void GotaCoin()
+
+        private void GotaCoin(CoinComponent coin)
         {
-            GetCoin?.Invoke();
+            GetCoin?.Invoke(coin);
         }
-        
     }
 }

@@ -212,18 +212,6 @@ namespace Runner
 
         //------------------ МОНЕТКИ ----------------------------------------------------------------------------------
         
-        /*
-        private void GenerateList(Dictionary<string, GameItemData> itemsData)
-        {
-            foreach (var key in itemsData.Keys)
-            {
-                UIItem item = Instantiate(prefab, content);
-                item.SetSprite(itemsData[key].Sprite);
-                item.SetCount(itemsData[key].Amount);
-                items.Add(key, item);
-            }
-        }
-        */
         
         private void GenerateCoins()
         {
@@ -263,13 +251,9 @@ namespace Runner
                 localPosition.z = currentLength;  // localPosition.z + counter * 2; // -1, 0, 14.3
                 
 
-                // создаем?
+                // создаем в рядок
                 GameObject thisCoin = Instantiate(coinPrefab, localPosition, Quaternion.identity, transform);
                 
-                // Dict ###################### пыталась пихать имя монет в словать, но я увы его не понимаю
-                //      ###################### хотя даже мини-проект делала по словарб случайных чисел:/
-                // coinDict.Add("coin_" + counter.ToString(), thisCoin);
-                // thisCoin.name = "coin_" + counter.ToString();
                 
                 counter++;
             }
