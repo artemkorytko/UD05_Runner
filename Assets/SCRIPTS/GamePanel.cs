@@ -42,7 +42,7 @@ namespace Runner
             _levelfile = FindObjectOfType<Level>();
             string whattoprintIntoLevel = _levelfile.currentlevel.ToString();
 
-            leveltext.text = $"Level {whattoprintIntoLevel} ";
+            leveltext.text = $"Level: {whattoprintIntoLevel} ";
         }
 
         public void PrintCoinsCount()

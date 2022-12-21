@@ -11,7 +11,7 @@ namespace Runner
         [SerializeField] private Level levelPrefab;
 
         //поле для задержек в корутинах:
-        [SerializeField] private float delay = 1f;
+        [SerializeField] private float delay = 3f;
 
         private Level _level;
         private PlayerController _playercontrollerfile;

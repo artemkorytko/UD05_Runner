@@ -17,11 +17,12 @@ namespace Runner
         [SerializeField] private float turnRotationAngle = 30f; // на сколько разрешаем повернуться
         [SerializeField] private float lerpSpeed = 5f; //для плавности поворота что ли??? 
         [SerializeField] private Transform model; //ссылка на модель, которую поворачиваем, задать руками !!!! :/
+        //[SerializeField] private GameObject birdsparticle; 
 
         private Rigidbody _rigidbody; // ссылка на ригибоди ДЛЯ ДВИЖЕНИЯ!
         private Animator _animator; // дочерний от вьюшки
         private InputHandler _inputHandler; // берет позицию из инпута
-
+        private ParticleSystem _birdparticles; // когда бушкой об стену
 
         // флаг про то что изменилось состояние активности
         public bool _isActive;
@@ -74,6 +75,7 @@ namespace Runner
             _animator = GetComponentInChildren<Animator>();
             _inputHandler = GetComponent<InputHandler>();
             _rigidbody = GetComponent<Rigidbody>();
+            _birdparticles = GetComponentInChildren<ParticleSystem>();
         }
 
 
@@ -143,7 +145,12 @@ namespace Runner
             // if (other.gameObject.GetComponent<CoinComponent>())
 
             //NEW
-            if (other.gameObject.TryGetComponent(out CoinComponent coin))
+            /*
+            Debug.Log("Parent: " + other.transform.parent.name);
+            Debug.Log("Root: " + other.transform.root.name);
+            */
+                
+            if (other.transform.parent.TryGetComponent(out CoinComponent coin))
             {
                 //Debug.Log("TryGetComponent: " + coin.name);
                 GotaCoin(coin);
@@ -202,6 +209,7 @@ namespace Runner
             _isActive = false;
             _animator.SetTrigger(Fall);
             OnDie?.Invoke();
+            _birdparticles.Play();
         }
 
 

@@ -48,7 +48,6 @@ namespace Runner
         // счетчик уровня
         public int currentlevel = 0;
 
-        
 
         //----------------переменные для стен и монеток---------------------
 
@@ -68,7 +67,6 @@ namespace Runner
         // {
         //     GenerateLevel(); // пока дебажно тут, потом надо засунуть в гейм менеджер
         // }
-        
 
 
         public void GenerateLevel()
@@ -81,8 +79,8 @@ namespace Runner
             // уровень состоит из фаз:
             GenerateRoad();
             GeneratePlayer();
-            GenerateWalls();
-            GenerateCoins();
+            GenerateWallsCoins();
+            //GenerateCoins();
         }
 
         //-------------------------------------- дестрой всего ---------------------------------------------------------
@@ -147,14 +145,11 @@ namespace Runner
             // из-за того что он тут объект типа "GameObject" - надо получить его компонент PlayerController
             _player = FindObjectOfType<PlayerController>();
             _player.Dobezal += WinSalute;
-            
         }
 
-        
 
-
-        //----------------------------------------- стены --------------------------------------------------------
-        private void GenerateWalls()
+        //----------------------------------------- стены И МОНЕТКИ --------------------------------------------------------
+        private void GenerateWallsCoins()
         {
             // ---- расчёты----------надо высчитать всю длину трассы от начала до финиша
             fulllength = roadPartCount * roadPartLength; // 10 частей * 5 = 50
@@ -173,7 +168,7 @@ namespace Runner
 
             // цикл повторяет построение уровня не зависимо от сегментов дороги
             // цикл работает, пока текущая дина меньше всей длины трассы
-            while (currentLength < fulllength) // while < 50 --- после 1го раза придет 14,3
+            while (currentLength < fulllength - 1) // while < 50 --- после 1го раза придет 14,3
             {
                 //----------------------- длина -------------------------------------
                 // заводим два значения вверху - минимальный и макс оффсет <----- это НА СКОЛЬКО СМЕСТИЛИСЬ
@@ -214,12 +209,36 @@ namespace Runner
                 // transform - назначаем ему родителя 
                 // roadLocalPosition - ставим его в это локальное место 
                 // Quaternion.identity - нулевой поворот - все значения прямо
+
+
+                //---------------------------монетки-------------------------------------------------------
+                //----- рандом оставшихся двух позиций для монетки
+
+                int rndCoinX = 0;
+
+                for (int i = 0; i < 3; i++)
+                {
+                    rndCoinX = Random.Range(0, 3);
+                    if (rndCoinX != rndPositionX)
+                        break;
+                }
+
+                // позиция, использующая рандом с проверкой
+                var coinPositionX = 1 + startPosX + (wallOffsetX * rndCoinX);
+
+                //----------------------------------------
+                // монетки позиция
+                var localCoinPosition = Vector3.zero; //  новая позиция 0,0,0
+                localCoinPosition.x = coinPositionX;
+                localCoinPosition.z = currentLength;
+                // ставим монетки
+                Instantiate(coinPrefab, localCoinPosition, Quaternion.identity, transform);
             }
         }
 
         //------------------ МОНЕТКИ ----------------------------------------------------------------------------------
 
-
+/*
         private void GenerateCoins()
         {
             fulllength = roadPartCount * roadPartLength; // 10 частей * 5 = 50
@@ -263,8 +282,9 @@ namespace Runner
 
                 counter++;
             }
+           
         }
-
+ */
 
         //------------------------------------ салют на финише ----------------------------------------------------
         private void WinSalute()
