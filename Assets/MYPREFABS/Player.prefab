@@ -472,7 +472,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 468176074835554401, guid: e639b2cb1effb49ca8733b7e34573c73, type: 3}
       propertyPath: startDelay.scalar
-      value: 1
+      value: 0.72
       objectReference: {fileID: 0}
     - target: {fileID: 3331526462706647127, guid: e639b2cb1effb49ca8733b7e34573c73, type: 3}
       propertyPath: m_RootOrder
