@@ -6,11 +6,7 @@ public class VikingMarker : MonoBehaviour
 {
     void Start()
     {
-        
+        // пометить викинга файлом для удара по башке
     }
     
-    void Update()
-    {
-        
-    }
 }
