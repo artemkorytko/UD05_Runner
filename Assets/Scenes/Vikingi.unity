@@ -159,7 +159,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0.18039216, g: 0.36862746, b: 0.3921569, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -236,7 +236,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69dcd3c65fdfd495c8a7a8896e1f9e4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _korabl: {fileID: 5029530683235941830, guid: f4b2cbcc809094541bff6be845f453aa, type: 3}
   _priest: {fileID: 8117074894357372322, guid: 316c81db2335746d6acb89218f8c1172, type: 3}
   _goldprefab: {fileID: 3019049733930038725, guid: 2eb18bb2dd57743bea1cacda5051ce27, type: 3}
   _vikingprefab: {fileID: 1365634226993615786, guid: adafc5c44df334b5f8c747ed36e685a0, type: 3}
@@ -352,6 +351,24 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!1 &1471091592 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5029530683235941830, guid: f4b2cbcc809094541bff6be845f453aa, type: 3}
+  m_PrefabInstance: {fileID: 5029530683451513660}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1471091595
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1471091592}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18734c4b41a7546ae8c9dce513905793, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _korabl: {fileID: 1471091592}
 --- !u!1001 &5029530683451513660
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -365,7 +382,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5029530683235941824, guid: f4b2cbcc809094541bff6be845f453aa, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -3.75
+      value: -6.46
       objectReference: {fileID: 0}
     - target: {fileID: 5029530683235941824, guid: f4b2cbcc809094541bff6be845f453aa, type: 3}
       propertyPath: m_LocalPosition.y

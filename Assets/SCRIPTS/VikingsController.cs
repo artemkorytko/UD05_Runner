@@ -28,7 +28,7 @@ public class VikingsController : MonoBehaviour
         }
     }
 
-    [SerializeField] private GameObject _korabl;
+    
     
     [SerializeField] private GameObject _priest;
     [SerializeField] private GameObject _goldprefab;
@@ -37,10 +37,11 @@ public class VikingsController : MonoBehaviour
     
     [SerializeField] private float _padding = 0.5f; // расстановка по сетке
 
-    public float _korablstartX;
+    // public float _korablstartX;
 
     public List<Viking> _vikingsArray;
-    //private Renderer _vikingrenderer;
+
+    private VikingKorabl _vikingKorablfile;
 
 
     //---------------- массив цветов для покраски викингов (шоб разные были) ----------------------- 
@@ -53,8 +54,8 @@ public class VikingsController : MonoBehaviour
     //-----------------------------------------------------------------------------------------------
     private void Awake()
     {
-       // _vikingrenderer = _vikingprefab.GetComponent<Renderer>();
-
+        _vikingKorablfile = FindObjectOfType<VikingKorabl>();
+        _vikingKorablfile.Priplyl += VikingiIzKorablya; //подписка на приплытие изнутри корабля
     }
 
 
@@ -62,16 +63,6 @@ public class VikingsController : MonoBehaviour
 
     void Start()
     {
-        
-       
-        // корабль не работает
-        // var korablstartX = _korabl.transform.localPosition.x;
-        // var korablstartY = _korabl.transform.localPosition.y;
-        Priplyzd();
-        
-
-
-        VikingiIzKorablya();
         VikingiToCHurch();
     }
 
@@ -90,13 +81,17 @@ public class VikingsController : MonoBehaviour
         int RowLength = 4;
         //int HowmanyColumns = 3;
         int howmanyvikings = 13; // <----сколько викингов !!!!
+        string thisvikingcolorname = null; // для рандомного цвета 
+        
 
-        //------- цикл делает викингов, сует в массив и расставляет в стартовую позицию ------------------
+        //=========== цикл делает викингов, сует в массив и расставляет в стартовую позицию ==========================
         for (int i = 0; i < howmanyvikings; i++)
         {
+            //------------ выбирает рандомный цвет из массива (не могу всунуть в покраску) --------------
             int thisvikingcolor = Random.Range(0, howmanycolors);
-            string thisvikingcolorname = colorlist[thisvikingcolor].ToString();
+             thisvikingcolorname = colorlist[thisvikingcolor].ToString();
             
+            //------------ расстановка рядочками (можно наверное изящней, но как есть)-------------------
             _vstartX  = _vstartX + _padding; //типо сдвинет вправо
             
             if (i == RowLength) // переход на вторую строчку
@@ -107,10 +102,11 @@ public class VikingsController : MonoBehaviour
 
             if (i == RowLength * 2)
             {
-                _vstartY = _vstartY - _padding * 3; //тут пока херь
+                _vstartY = _vstartY - _padding * 2.5f; //тут пока херь
                 _vstartX = -4f;
             }
 
+            //------------- заполняет массив -------------------------------------
             Vector3 v1Pos = new Vector3(_vstartX, _vstartY, 0);
             _vikingsArray.Add(new Viking(false, // пока без золота
                 thisvikingcolor,
@@ -134,9 +130,16 @@ public class VikingsController : MonoBehaviour
                 // ???????????????????????????????????????????????????????
                 
                 //--------- красим
-                var rndcolor = (Random.Range(0, howmanycolors));
-                thisViking.GetComponent<Renderer>().material.color = UnityEngine.Color.cyan; 
-                // Color.FromName(thisvikingcolorname);
+                var paintornottopaint = Random.Range(0, 3);
+                if (paintornottopaint == 0)
+                {
+                    thisViking.GetComponent<Renderer>().material.color = UnityEngine.Color.cyan;
+                }
+                if (paintornottopaint == 1)
+                {
+                    thisViking.GetComponent<Renderer>().material.color = UnityEngine.Color.red;
+                }
+                // Color.FromName(thisvikingcolor); - тоже не работает
                 // ????????????????????????????????????????????????????????
                 // ????????? КАК всунуть стринговую переменную в команду Color??? ??????????????????????
                 // ???????????????????????????????????????????????????????
@@ -146,7 +149,7 @@ public class VikingsController : MonoBehaviour
            }
         }// конец цикла for
     }
-    //-------------------------------------------------------------------------------------------------
+    //=================================================================================================================
 
     void VikingiToCHurch()
     {
@@ -155,34 +158,17 @@ public class VikingsController : MonoBehaviour
 
     
         
-    //---------------------------- корабль пытается приплыть -------------------------------------------------------------------
-    void Priplyzd()
-    {   
-        float korablspeed = 10f;
-        // Debug.Log("Корутина начата"); // это все была корутина но теперь тупо функция
-        
-        for (int i = 0; i < 40; i++)
-        {
-                
-            //_korabl.transform.getlocalPosition.x = 3;
-            //_korabl.transform.Translate(_korabl.transform.position + new Vector3(3,3,3));
-            //_korabl.transform.Translate(Vector3.right  * korablspeed * Time.deltaTime );
-            _korabl.transform.Translate(3, 0, 0);
-            // ?????????????????????????????????????????????????????????????????????????????????
-            // ?????????????????? не плывет. Я не понимаю, как использвать этот транслейт : ((((
-            // может еще компомнет какой искать надо было ??????????????????????????????
-            // ?????????????????????????????????????????????????????????????????????????????????
-        }
+    
 
-
-
-
-    // Update is called once per frame
     void Update()
     {
         
-        }
-
     }//update end
 
+
+    private void OnDestroy()
+    {
+      //  _vikingKorablfile.Priplyl -= VikingiIzKorablya;
+    }
 }
+
