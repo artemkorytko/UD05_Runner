@@ -9,6 +9,7 @@ using UnityEngine;
 using Color = System.Drawing.Color;
 using Random = UnityEngine.Random;
 
+//================ КОНТРОЛЛЕР ВСЕЙ СЦЕНЫ ТУТ ============================================
 public class VikingsController : MonoBehaviour
 {
     [Serializable]
@@ -29,27 +30,35 @@ public class VikingsController : MonoBehaviour
     }
 
     
+    public class Gold
+    {
+        public Vector3 G_position;
+
+        public Gold(Vector3 gPosition) // че пишууууу?
+        {
+            G_position = gPosition;
+        }
+    }
     
+
     [SerializeField] private GameObject _priest;
     [SerializeField] private GameObject _goldprefab;
     [SerializeField] private GameObject _vikingprefab;
     
-    
     [SerializeField] private float _padding = 0.5f; // расстановка по сетке
+    
+    public List<Viking> _vikingsArray; // инит массива для викингов
+    public List<Gold> goldarray; //или Array???
 
-    // public float _korablstartX;
-
-    public List<Viking> _vikingsArray;
-
-    private VikingKorabl _vikingKorablfile;
-
+    private VikingKorabl _vikingKorablfile; // подключение файла с кораблем
+    int howmanyvikings = 13;
 
     //---------------- массив цветов для покраски викингов (шоб разные были) ----------------------- 
+    // пока не работет
     private static List<string> colorlist = new List<string>()
         { "green", "white", "blue", "pink", "yelow", "cyan", "magenta", "black" };
     public int howmanycolors = colorlist.Count;
 
-    
     
     //-----------------------------------------------------------------------------------------------
     private void Awake()
@@ -59,20 +68,51 @@ public class VikingsController : MonoBehaviour
     }
 
 
-
-
+    //-----------------------------------------------------------------------------------------------
     void Start()
     {
+        LayGold();
         VikingiToCHurch();
     }
+    
+    //-----------------------------------------------------------------------------------------------
+    private void LayGold()
+    {
+        goldarray = new List<Gold>(howmanyvikings);
+        
+        var _gstartX = -1.2f;
+        var _gstartY = 1f;
+        int RowLength = 7;
 
+        //--------- разложить золото ------------------------------------------------------------------------------
+        for (int i = 0; i < howmanyvikings; i++)
+        {
+            _gstartX  = _gstartX + _padding; //типо сдвинет вправо
+            
+            if (i == RowLength) // переход на вторую строчку
+            {
+                _gstartY = _gstartY - _padding * 2; //как есть
+                _gstartX = -1.2f + _padding;
+            }
+            
+            Vector3 g1Pos = new Vector3(_gstartX, _gstartY, 0);
+            
+            // ---- в массив идет только свежерассчитанная позиция 
+            goldarray.Add( new Gold(g1Pos));
+            
+            // !!----- внимание, использует координаты из массива !!! ---------
+            var thisGold = Instantiate(_goldprefab, goldarray[i].G_position, Quaternion.identity, transform);
+        }
+    }
 
+    
+    
+    
 
-    //-------------------------------------------------------------------------------------------------
-
+    //---------------------- викинги выходят ------------------------------------------------
     private void VikingiIzKorablya()
     {
-        _vikingsArray = new List<Viking>(13);
+        _vikingsArray = new List<Viking>(howmanyvikings);
 
         //------- стартовая позиция первого викинга
         var _vstartX = -4.5f;
@@ -80,7 +120,7 @@ public class VikingsController : MonoBehaviour
 
         int RowLength = 4;
         //int HowmanyColumns = 3;
-        int howmanyvikings = 13; // <----сколько викингов !!!!
+         // <----сколько викингов !!!!
         string thisvikingcolorname = null; // для рандомного цвета 
         
 

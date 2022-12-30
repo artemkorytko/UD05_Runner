@@ -14,7 +14,7 @@ public class VikingHimself : MonoBehaviour
     private void Awake()
     {
         _v_priescofile = FindObjectOfType<V_PriestController>();
-        _v_priescofile.BumPoBashke += Ischez;
+        _v_priescofile.BumPoBashke += Ischez; // прихоит из священника, по триггеру в канделябре
     }
 
     void Start()
@@ -22,7 +22,7 @@ public class VikingHimself : MonoBehaviour
         mygold.SetActive(false);
     }
 
-    // временная функция пропажи викинга
+    //============== временная функция пропажи викинга =======================
     private void Ischez(VikingHimself bashka)
     {
         if (bashka == this)

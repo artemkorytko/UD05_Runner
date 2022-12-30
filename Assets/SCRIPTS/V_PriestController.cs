@@ -117,8 +117,12 @@ public class V_PriestController : MonoBehaviour
             zamah = false;
         }
     }
-    //-------------------------------------------------------------------------------------------------
-
+    
+    
+    
+    
+    
+    //-------------------- высчитывает, по какому викингу треснули (триггер на конце канделябра)--------------------------
     void OnTriggerEnter(Collider predmet)
     {
         Debug.Log("OnTriggerEnter: Ата-та!");
@@ -130,6 +134,7 @@ public class V_PriestController : MonoBehaviour
         }
     }
 
+    //----------------- вызывает пропажу викинга в случае удара -------------------
     private void GotaViking(VikingHimself bashka)
     {
         if (isPressedSpace)
@@ -137,6 +142,9 @@ public class V_PriestController : MonoBehaviour
             BumPoBashke?.Invoke(bashka);
         }
     }
+    
+    
+    
 
     // void OnCollisionEnter(Collision collision)
     // {
