@@ -11,46 +11,43 @@ public class V_PriestController : MonoBehaviour
     private Rigidbody _priestrigidbody;
     private Rigidbody _kandrigidbody;
 
-    private float moveSpeed = 10f;
+    private float moveSpeed = 5f; // скорость священника
     private bool zamah = true; // флаг для поднятия канделябра
-    
+
     private bool isPressedSpace = false; // флаг нажатого пробела
-    
-    public event Action BumPoBashke;
+
+    public event Action<VikingHimself> BumPoBashke;
 
     private void Awake()
     {
         // найти внутренний ригибади у канделябра
         _priestrigidbody = GetComponent<Rigidbody>();
         _kandrigidbody = _kandelabr.GetComponentInChildren<Rigidbody>();
-        
+
         // поставить по событию "1й викинг вошел!" потом!!!!!!!!!!!!!!!!
         if (zamah)
         {
             _kandelabr.transform.Rotate(0, 0, -90);
-        }        
-        
-         
+        }
     }
 
     //
     private void StayInChurch()
     {
         var position = _priest.transform.position;
-        
+
         float priestXbounds = _priestrigidbody.position.x;
-        priestXbounds = Mathf.Clamp( priestXbounds,-1.1f,3.77f);
+        priestXbounds = Mathf.Clamp(priestXbounds, -1.1f, 3.77f);
 
         float priestYbounds = _priestrigidbody.position.y;
-        priestYbounds =   Mathf.Clamp( priestYbounds,-1.29f,0.57f);
-                    
+        priestYbounds = Mathf.Clamp(priestYbounds, -1.29f, 0.57f);
     }
-    
+
 
     private void Update()
     {
         StayInChurch();
-        
+
         //----------------- кнопки двигания попа -----------------------------------------
         if (Input.GetKey(KeyCode.UpArrow))
         {
@@ -78,29 +75,28 @@ public class V_PriestController : MonoBehaviour
             // выходим, если пробел уже был нажат...
             if (isPressedSpace)
                 return;
-            
+
             // устанавливаем флаг нажатого пробела
             isPressedSpace = true;
-            
+
             //?????????????????????????? тут бы ограничить одним разом но как?? 
             BumKandelabrom(); // машет канделябром
-            
+
             // выходим из обработки пробела
             return;
         }
 
         // снимаем флаг нажатого пробела
         isPressedSpace = false;
-
     } //end update
 
     //-------------------------- функция удара канделябром по викингу -----------------------------------
     void BumKandelabrom()
     {
         // ????????????????? дебаг вызваается по 60 раз и более
-        
 
-        StartCoroutine( WaitTillPodnimet());
+
+        StartCoroutine(WaitTillPodnimet());
 
         IEnumerator WaitTillPodnimet()
         {
@@ -112,23 +108,43 @@ public class V_PriestController : MonoBehaviour
         {
             Debug.Log("вжух");
             _kandelabr.transform.Rotate(0, 0, 90);
+
             // ?????????? ПОКА НЕ РАБОТАЕТ ???????????????????????????????????
             // добавить коллайдер на канделябр, rigibody на викинга
-            void OnTriggerEnter(Collider predmet) 
-                    {
-                       if (predmet.transform.parent.TryGetComponent(out VikingMarker bashka))
-                       {
-                         BumPoBashke?.Invoke(); // вызовет пропажу золота у викинга и выход из церкви
-                       }
-                    }
 
             yield return new WaitForSeconds(0.3f);
             _kandelabr.transform.Rotate(0, 0, -90);
+            zamah = false;
         }
-        
-         
-        
-        
     }
     //-------------------------------------------------------------------------------------------------
+
+    void OnTriggerEnter(Collider predmet)
+    {
+        Debug.Log("OnTriggerEnter: Ата-та!");
+
+        if (predmet.transform.TryGetComponent(out VikingHimself bashka))
+        {
+            // BumPoBashke?.Invoke(); // вызовет пропажу золота у викинга и выход из церкви
+            GotaViking(bashka);
+        }
+    }
+
+    private void GotaViking(VikingHimself bashka)
+    {
+        if (isPressedSpace)
+        {
+            BumPoBashke?.Invoke(bashka);
+        }
+    }
+
+    // void OnCollisionEnter(Collision collision)
+    // {
+    //     Debug.Log("OnCollisionEnter: Ата-та!");
+    //     
+    //     if (collision.transform.parent.TryGetComponent(out VikingMarker bashka))
+    //     {
+    //         BumPoBashke?.Invoke(); // вызовет пропажу золота у викинга и выход из церкви
+    //     }
+    // }
 }

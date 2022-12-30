@@ -123,6 +123,11 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &346843385 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8117074894357372322, guid: 316c81db2335746d6acb89218f8c1172, type: 3}
+  m_PrefabInstance: {fileID: 8117074894709802375}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &392354158
 GameObject:
   m_ObjectHideFlags: 0
@@ -207,6 +212,25 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &808963109 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8117074893845642376, guid: 316c81db2335746d6acb89218f8c1172, type: 3}
+  m_PrefabInstance: {fileID: 8117074894709802375}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &808963114
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 808963109}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 10894064f8b014f4ba42de36d1caab5b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _priest: {fileID: 346843385}
+  _kandelabr: {fileID: 1595060427}
 --- !u!1 &845342286
 GameObject:
   m_ObjectHideFlags: 0
@@ -369,6 +393,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _korabl: {fileID: 1471091592}
+--- !u!1 &1595060427 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7884356315167678358, guid: 316c81db2335746d6acb89218f8c1172, type: 3}
+  m_PrefabInstance: {fileID: 8117074894709802375}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &5029530683451513660
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -433,6 +462,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 6142670875388068064, guid: 8a4d76c70f9e04f08b6c4836a7656292, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6142670875388068065, guid: 8a4d76c70f9e04f08b6c4836a7656292, type: 3}
       propertyPath: m_Name
       value: BG sea Plane
@@ -481,6 +514,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6142670876717524408, guid: 8a4d76c70f9e04f08b6c4836a7656292, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8a4d76c70f9e04f08b6c4836a7656292, type: 3}
 --- !u!1001 &8117074894709802375
@@ -490,6 +527,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4603277930950789563, guid: 316c81db2335746d6acb89218f8c1172, type: 3}
+      propertyPath: m_UseGravity
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4603277930950789563, guid: 316c81db2335746d6acb89218f8c1172, type: 3}
+      propertyPath: m_CollisionDetection
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8117074894357372320, guid: 316c81db2335746d6acb89218f8c1172, type: 3}
       propertyPath: m_RootOrder
       value: 3
@@ -538,5 +583,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: priest
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 4581737571662533546, guid: 316c81db2335746d6acb89218f8c1172, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 316c81db2335746d6acb89218f8c1172, type: 3}

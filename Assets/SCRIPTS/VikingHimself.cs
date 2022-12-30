@@ -7,9 +7,9 @@ public class VikingHimself : MonoBehaviour
 {
     [SerializeField] private GameObject mygold;
     [SerializeField] private GameObject iamviking;
-    
+
     private V_PriestController _v_priescofile;
-    
+
 
     private void Awake()
     {
@@ -20,20 +20,15 @@ public class VikingHimself : MonoBehaviour
     void Start()
     {
         mygold.SetActive(false);
-
-        
     }
 
     // временная функция пропажи викинга
-    void Ischez()
+    private void Ischez(VikingHimself bashka)
     {
-        iamviking.SetActive(false);
+        if (bashka == this)
+        {
+            iamviking.SetActive(false);
+        }
     }
-
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    
 }
