@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Net;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEditor.Experimental.GraphView;
@@ -21,6 +22,9 @@ public class VikingsController : MonoBehaviour
         public int Health;
         public Vector3 V_position;
         public float Doordist;
+
+        public bool isGoToDoor = true;
+        public bool isGoToGold = false;
 
         public GameObject VikingObject;
 
@@ -58,7 +62,7 @@ public class VikingsController : MonoBehaviour
     [SerializeField] private float _padding = 0.5f; // расстановка по сетке
 
     public List<Viking> _vikingsArray; // инит массива для викингов
-    public List<Gold> goldarray; //или Array???
+    public List<Gold> _goldarray; //или Array???
 
 
     private VikingKorabl _vikingKorablfile; // подключение файла с кораблем
@@ -72,6 +76,7 @@ public class VikingsController : MonoBehaviour
     private bool AllowVikingsGo;
 
     private event Action VikingiVyshli;
+    public event Action <VikingHimself> GotGold;
 
     public Vector3 doorpos;
     //---------------------------------------------------------------------------------------------
@@ -110,7 +115,7 @@ public class VikingsController : MonoBehaviour
 
     private void LayGold()
     {
-        goldarray = new List<Gold>(howmanyvikings);
+        _goldarray = new List<Gold>(howmanyvikings);
 
         int ord_no_gold = 0; // для слоев 
         var _gstartX = -1.2f;
@@ -131,12 +136,12 @@ public class VikingsController : MonoBehaviour
             Vector3 g1Pos = new Vector3(_gstartX, _gstartY, 0);
 
             // ---- в массив идет только свежерассчитанная позиция 
-            goldarray.Add(new Gold(g1Pos));
+            _goldarray.Add(new Gold(g1Pos));
 
             // !!----- внимание, использует координаты из массива !!! ---------
-            var thisGold = Instantiate(_goldprefab, goldarray[i].G_position, Quaternion.identity, transform);
+            var thisGold = Instantiate(_goldprefab, _goldarray[i].G_position, Quaternion.identity, transform);
             ord_no_gold++;
-            thisGold.GetComponent<SpriteRenderer>().sortingOrder = 150 + ord_no;
+            thisGold.GetComponent<SpriteRenderer>().sortingOrder = 50 + ord_no;
         }
     }
 
@@ -278,53 +283,89 @@ public class VikingsController : MonoBehaviour
 
         AllowVikingsGo = true;
     }
-   
+
 
     void Update()
     {
         if (AllowVikingsGo)
         {
-            // float startpos_x = _vikingsArray[0].VikingObject.GetComponent<SpriteRenderer>().transform.position.x;
-            // float startpos_y = _vikingsArray[0].VikingObject.GetComponent<SpriteRenderer>().transform.position.y;
-            // float startpos_z = _vikingsArray[0].VikingObject.GetComponent<SpriteRenderer>().transform.position.z;
-            //
-            // float _x = Mathf.SmoothStep(startpos_x, doorpos.x, Time.deltaTime / 5);
-            // float _y = Mathf.SmoothStep(startpos_y, doorpos.y, Time.deltaTime / 5);
-            //
-            // _vikingsArray[0].VikingObject.GetComponent<SpriteRenderer>().transform.position = new Vector3(_x, _y, startpos_z);
-            
-            
+            // Идут до двери
             /*
-            float todoorspeed = 0.08f;
-            
-            float startpos_x = _vikingsArray[0].V_position.x;
-            float startpos_y = _vikingsArray[0].V_position.y;
-            
-            float _x = Mathf.SmoothStep(startpos_x, doorpos.x, Time.time * todoorspeed);
-            float _y = Mathf.SmoothStep(startpos_y, doorpos.y, Time.time * todoorspeed);
-           */
-
-            
             foreach (Viking item in _vikingsArray)
             {
                 Vector3 v = item.VikingObject.GetComponent<SpriteRenderer>().transform.position;
                 v = Vector3.MoveTowards(v, doorpos, 5 * Time.deltaTime);
-                item.VikingObject.GetComponent<SpriteRenderer>().transform.position = v; 
+                item.VikingObject.GetComponent<SpriteRenderer>().transform.position = v;
             }
-            
-            
+            */
+
+
+            // Идут до золота
             // foreach (Viking item in _vikingsArray)
             // {
             //     Vector3 v = item.VikingObject.GetComponent<SpriteRenderer>().transform.position;
             //     // v = Vector3.MoveTowards(v, doorpos, 5 * Time.deltaTime);
             //     v = Vector3.MoveTowards(v, goldarray[_vikingsArray.IndexOf(item)].G_position, 5 * Time.deltaTime);
             //     item.VikingObject.GetComponent<SpriteRenderer>().transform.position = v; 
-            // }            
+            // }           
 
+
+            // StartCoroutine("GoToDoors");
+            StartCoroutine(GoToGold());
         }
     }
 
+    // IEnumerator GoToDoors()
+    // {
+    //     foreach (Viking item in _vikingsArray)
+    //     {
+    //         Vector3 v = item.VikingObject.GetComponent<SpriteRenderer>().transform.position;
+    //         v = Vector3.MoveTowards(v, doorpos, 5 * Time.deltaTime);
+    //         
+    //
+    //         yield return new WaitForSeconds(0.3f);
+    //     }
+    // }
 
+
+    IEnumerator GoToGold()
+    {
+        foreach (Viking item in _vikingsArray)
+        {
+            Vector3 v = item.VikingObject.GetComponent<SpriteRenderer>().transform.position;
+
+            if (item.isGoToDoor)
+            {
+                v = Vector3.MoveTowards(v, doorpos, 5 * Time.deltaTime);
+                if (Vector3.Distance(v, doorpos) == 0)
+                {
+                    item.isGoToDoor = false;
+                    item.isGoToGold = true;
+                }
+            }
+
+            if (item.isGoToGold)
+            {
+                v = Vector3.MoveTowards(v, _goldarray[_vikingsArray.IndexOf(item)].G_position, 5 * Time.deltaTime);
+                if (Vector3.Distance(v, _goldarray[_vikingsArray.IndexOf(item)].G_position) == 0)
+                {
+                    item.isGoToDoor = false;
+                    item.isGoToGold = false;
+                    item.GoldShown = true;
+
+                    if (item.VikingObject.TryGetComponent(out VikingHimself oneviking))
+                    {
+                        GotGold?.Invoke(oneviking);
+                    }
+                }
+            }
+
+            item.VikingObject.GetComponent<SpriteRenderer>().sortingOrder = 100 + _vikingsArray.IndexOf(item);
+            item.VikingObject.GetComponent<SpriteRenderer>().transform.position = v;
+
+            yield return new WaitForSeconds(0.3f);
+        }
+    }
 
     private void OnDestroy()
     {
