@@ -44,14 +44,22 @@ public class VikingsController : MonoBehaviour
     [SerializeField] private GameObject _priest;
     [SerializeField] private GameObject _goldprefab;
     [SerializeField] private GameObject _vikingprefab;
+    [SerializeField] private GameObject _door;
     
     [SerializeField] private float _padding = 0.5f; // расстановка по сетке
     
     public List<Viking> _vikingsArray; // инит массива для викингов
     public List<Gold> goldarray; //или Array???
+    public List <float> V_Door_dist ;
 
     private VikingKorabl _vikingKorablfile; // подключение файла с кораблем
     int howmanyvikings = 13;
+
+    private VikingsController _thisfile;
+
+    private int ord_no;
+
+    private event Action VikingiVyshli;
 
     //---------------- массив цветов для покраски викингов (шоб разные были) ----------------------- 
     // пока не работет
@@ -65,6 +73,8 @@ public class VikingsController : MonoBehaviour
     {
         _vikingKorablfile = FindObjectOfType<VikingKorabl>();
         _vikingKorablfile.Priplyl += VikingiIzKorablya; //подписка на приплытие изнутри корабля
+        
+        _thisfile = FindObjectOfType<VikingsController>(); 
     }
 
 
@@ -72,7 +82,12 @@ public class VikingsController : MonoBehaviour
     void Start()
     {
         LayGold();
-        VikingiToCHurch();
+        
+        // по концу цикла расстановки викингов долго сработать событие ВикингиВышли
+        _thisfile.VikingiVyshli += VikingiToCHurch;
+        
+        
+        
     }
     
     //-----------------------------------------------------------------------------------------------
@@ -80,6 +95,7 @@ public class VikingsController : MonoBehaviour
     {
         goldarray = new List<Gold>(howmanyvikings);
         
+        int ord_no_gold = 0; // для слоев 
         var _gstartX = -1.2f;
         var _gstartY = 1f;
         int RowLength = 7;
@@ -91,7 +107,7 @@ public class VikingsController : MonoBehaviour
             
             if (i == RowLength) // переход на вторую строчку
             {
-                _gstartY = _gstartY - _padding * 2; //как есть
+                _gstartY = _gstartY - _padding * 0.8f; //как есть
                 _gstartX = -1.2f + _padding;
             }
             
@@ -102,6 +118,8 @@ public class VikingsController : MonoBehaviour
             
             // !!----- внимание, использует координаты из массива !!! ---------
             var thisGold = Instantiate(_goldprefab, goldarray[i].G_position, Quaternion.identity, transform);
+            ord_no_gold++;
+            thisGold.GetComponent<SpriteRenderer>().sortingOrder = 150 + ord_no;
         }
     }
 
@@ -123,7 +141,6 @@ public class VikingsController : MonoBehaviour
          // <----сколько викингов !!!!
         string thisvikingcolorname = null; // для рандомного цвета 
         
-
         //=========== цикл делает викингов, сует в массив и расставляет в стартовую позицию ==========================
         for (int i = 0; i < howmanyvikings; i++)
         {
@@ -156,8 +173,9 @@ public class VikingsController : MonoBehaviour
             
            // это нормально вообще, корутина в цикле? Иначе тупо откладывает все сразу :/
            int secs = i;
-           StartCoroutine(WaitaSec()); 
-           
+
+           StartCoroutine(WaitaSec());
+
            IEnumerator WaitaSec()
            {
                 float waittime = secs * 0.2f; // задержка между появлением викингов
@@ -165,9 +183,10 @@ public class VikingsController : MonoBehaviour
                 
                 //---------- штампуем викингов -------------------------------
                 var thisViking = Instantiate(_vikingprefab, _vikingsArray[secs].V_position, Quaternion.identity, transform);
-                // ??????????????????????????????????????????????????????
-                // ????????? КАК ЗАДАТЬ НОМЕР СЛОЯ ??????????????????????
-                // ???????????????????????????????????????????????????????
+                
+                // Order! ------!!! номер в слое !!!--------------------------
+                ord_no++;
+                thisViking.GetComponent<SpriteRenderer>().sortingOrder = 100 + ord_no;
                 
                 //--------- красим
                 var paintornottopaint = Random.Range(0, 3);
@@ -183,17 +202,56 @@ public class VikingsController : MonoBehaviour
                 // ????????????????????????????????????????????????????????
                 // ????????? КАК всунуть стринговую переменную в команду Color??? ??????????????????????
                 // ???????????????????????????????????????????????????????
-                
+               
                 
                 // Debug.Log(" тадам "); // ==> ОНО ОТКЛАДЫВАЕТ ЭТО ДЕЙСТВИЕ НА 3с !!!!!!!!!!!!
            }
+           
+           
         }// конец цикла for
+        VikingiVyshli?.Invoke();
     }
     //=================================================================================================================
 
     void VikingiToCHurch()
     {
-        //_vikingsArray[1].V_position ээээ блин;
+        
+        float vdoordist = 0; // переменная для высчитывания
+        
+        //get position of the door
+       Vector3 doorpos = _door.transform.position;
+       
+       // небольшой массив для дистанций от викингов к двери
+       V_Door_dist = new List<float>();
+
+
+       // item ибо у нас класс
+       foreach (Viking item in _vikingsArray)
+       {
+           
+           // !!!!
+           Vector3 xx = item.V_position; 
+           
+           //каждому викингу высчитываем дистанцию
+           vdoordist = Vector3.Distance(xx, doorpos);
+           
+           //суём дистанцию в массив
+           V_Door_dist.Add(vdoordist);
+           Debug.Log($"Dist for Viking {_vikingsArray.IndexOf(item)} -- {vdoordist}");
+       }
+       
+       // перебрть новый массив и найти меньшее?
+       
+       
+       
+       //List.Sort(V_Door_dist);
+       
+       // foreach (float distinarr in V_Door_dist)
+       //         {
+       //             
+       //         }
+       
+       
     }
 
     
