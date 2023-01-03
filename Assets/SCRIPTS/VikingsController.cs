@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Net;
+using System.Numerics;
 using DG.Tweening;
 using Runner;
 using TMPro;
@@ -11,8 +12,10 @@ using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using Color = System.Drawing.Color;
+using Quaternion = UnityEngine.Quaternion;
 using Random = UnityEngine.Random;
 using Sequence = Unity.VisualScripting.Sequence;
+using Vector3 = UnityEngine.Vector3;
 
 //================ КОНТРОЛЛЕР ВСЕЙ СЦЕНЫ ТУТ ============================================
 public class VikingsController : MonoBehaviour
@@ -31,11 +34,11 @@ public class VikingsController : MonoBehaviour
 
         public GameObject VikingObject;
 
+        // блок типо для инкапсуляции? :/
         public Viking(bool goldShown, int health, Vector3 vPosition, float doordist,
             GameObject vikingObject)
         {
             GoldShown = goldShown;
-            
             Health = health;
             V_position = vPosition;
             Doordist = doordist;
@@ -60,7 +63,7 @@ public class VikingsController : MonoBehaviour
 
     //------------------ ПЕРЕМЕННЫЕ И ПРЕФАБЫ ----------------------------------------------------
 
-    [SerializeField] private GameObject _priest;
+    // [SerializeField] private GameObject _priest;
     [SerializeField] private GameObject _goldprefab;
     [SerializeField] private GameObject _vikingprefab;
     [SerializeField] private GameObject _door;
@@ -70,20 +73,20 @@ public class VikingsController : MonoBehaviour
 
     public List<Viking> _vikingsArray; // инит массива для викингов
     public List<Gold> _goldarray; //или Array???
-
-
+    
     private VikingKorabl _vikingKorablfile; // подключение файла с кораблем
     int howmanyvikings = 13;
     
-    private VikingsController _thisfile;
+    private VikingsController _thisfile; // для события внутри ЭТОГО ФАЙЛА
+    private V_PriestController _v_priescofile;
 
     // все для правильной расстановки слоев
     private int ord_no;
     private int gold_layerorder = 50;
     private int viking_layerorder = 100;
 
-    // разрешаем идти к цервки
-    private bool AllowVikingsGo;
+    // разрешаем идти к цервки (старая анимация)
+    // private bool AllowVikingsGo;
     
     // первый вошел - священник поднимет канделябр
     bool flagFirstEntered = false; 
@@ -100,17 +103,17 @@ public class VikingsController : MonoBehaviour
     private Stack<Viking> _vikStack;
 
     private DG.Tweening.Sequence _vikToGoldAnimation;
+    
     //---------------------------------------------------------------------------------------------
 
     
 
     //---------------- массив цветов для покраски викингов (шоб разные были) ----------------------- 
-    // пока не работет
-    private static List<string> colorlist = new List<string>()
+    private static List<string> _colorlist = new List<string>()
         { //"green", "white", "blue", "pink", "yelow", "cyan", "magenta", "black"
-          "220,20,60", "255,20,147","139,0,0","173,255,47","106,90,205","139,0,139"
+          "220,20,60", "255,20,147","139,0,0","173,255,47","106,90,205","139,0,139", "255,127,80"
         };
-    private int howmanycolors = colorlist.Count; // length - ленгтх само меняет на каунт
+    private int howmanycolors = _colorlist.Count; // length - ленгтх само меняет на каунт
 
 
     //-----------------------------------------------------------------------------------------------
@@ -120,21 +123,18 @@ public class VikingsController : MonoBehaviour
         _vikingKorablfile.Priplyl += VikingiIzKorablya; //подписка на приплытие изнутри корабля
 
         _thisfile = FindObjectOfType<VikingsController>();
-        _vikToGoldAnimation = DOTween.Sequence();
+        _v_priescofile = FindObjectOfType<V_PriestController>();
     }
 
 
     //-----------------------------------------------------------------------------------------------
     void Start()
     {
-       
-        
         LayGold();
 
         // по концу цикла расстановки викингов должно сработать событие ВикингиВышли
         _thisfile.VikingiVyshli += VikingiToCHurch;
-        
-         
+        _v_priescofile.BumPoBashke += DropGold;
     }
 
     
@@ -254,7 +254,7 @@ public class VikingsController : MonoBehaviour
 
                 //--------- красим двоих из каждых трёх ------------------
                 int thisvikingcolor = Random.Range(0, howmanycolors);
-                thisvikingcolorname = colorlist[thisvikingcolor];
+                thisvikingcolorname = _colorlist[thisvikingcolor];
                 
                 var paintornottopaint = Random.Range(0, 3);
                 if (paintornottopaint == 0 || paintornottopaint == 1 )
@@ -333,15 +333,15 @@ public class VikingsController : MonoBehaviour
             var whichGoldPile = _goldarray[i];
             
             GameObject queueviking = _vikQueue.Peek().VikingObject;
-
-            DOTween.Sequence()
+            
+            _vikToGoldAnimation = DOTween.Sequence()
                 .AppendInterval(i)
                 .Append(queueviking.transform.DOMove(doorpos, 2))
                 .AppendInterval(0.3f)
                 .AppendCallback(PriestReady)
-                .Append(queueviking.transform.DOMove(whichGoldPile.G_position, 1))
+                .Append(queueviking.transform.DOMove(whichGoldPile.G_position, 0.5f))
                 .AppendCallback(IhavetheGold)
-                .AppendInterval(2f)
+                .AppendInterval(1f)
                 .AppendCallback(NowGoAway);
 
             // _vikToGoldAnimation.Append(queueviking.transform.DOMove(doorpos, 3)).AppendInterval(2)
@@ -380,7 +380,7 @@ public class VikingsController : MonoBehaviour
     } // конец викинги ту черч
 
     
-    //=================================================================================================================
+    //============================= вторая часть анимации когда золото взяли =======================================================
     void NowGoAway()
     {
         GameObject stackviking = _vikStack.Peek().VikingObject;
@@ -391,14 +391,29 @@ public class VikingsController : MonoBehaviour
             
             void CarryGoldOut()
             { 
-                DOTween.Sequence()
-                .Append(stackviking.transform.DOMove(doorpos, 2))
+                _vikToGoldAnimation = DOTween.Sequence()
+                .Append(stackviking.transform.DOMove(doorpos, 1))
                 .AppendInterval(0.3f)
                 .Append(stackviking.transform.DOMove(new Vector3(outpos.x + outposOffset,outpos.y ,outpos.z), 2));
 
-                outposOffset += 0.1f;
+                outposOffset += 0.2f;
             }
     }
+
+    
+    //--------------- роняние золота по событию бумбашка из священника --------
+    void DropGold(VikingHimself bashka)
+    {
+        // ??????????????? тут надо получить позицию убитого викинга
+        Vector3 dropGoldPos = bashka.transform.position;
+        _vikToGoldAnimation.Kill();
+        
+        // кидаем туда новое золото
+        var droppedGold = Instantiate(_goldprefab, dropGoldPos, Quaternion.identity, transform);
+    }
+
+
+
 
     //--------------- передает в священника и меняет флаг --------------------------------------------------
     void PriestReady()

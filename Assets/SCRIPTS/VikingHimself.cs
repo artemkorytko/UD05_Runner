@@ -32,6 +32,8 @@ public class VikingHimself : MonoBehaviour
     {
         if (bashka == this)
         {
+            // а пусть станет прозрачный - нееее потом задоблбаюсь 
+            // iamviking.GetComponent<Renderer>().material.color = new UnityEngine.Color(1, 1, 1, 0.5f);
             iamviking.SetActive(false);
         }
     }
