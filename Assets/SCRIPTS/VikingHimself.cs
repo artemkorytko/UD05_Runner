@@ -23,6 +23,7 @@ public class VikingHimself : MonoBehaviour
 
     void Start()
     {
+        // золото в руках викинга пока не видно
         mygold.SetActive(false);
     }
 
@@ -34,14 +35,25 @@ public class VikingHimself : MonoBehaviour
             iamviking.SetActive(false);
         }
     }
+    
 
     private void ShowGold(VikingHimself oneviking)
     {
         if (oneviking == this)
         {
+            // отобразить золото в руках викинга
             mygold.SetActive(true);
-            //mygold.GetComponent<SpriteRenderer>().sortingOrder = 105;
+            
+            // взять ордер от викинга и дать такой же золоту +1
+            int vikOrder = oneviking.GetComponent<SpriteRenderer>().sortingOrder;
+            mygold.GetComponent<SpriteRenderer>().sortingOrder = vikOrder + 1;
         }
     }
-
+    
+    
+    private void OnDestroy() // оно надо тут?
+    {
+        _v_priescofile.BumPoBashke -= Ischez;
+        vikifile.GotGold -= ShowGold;
+    }
 }

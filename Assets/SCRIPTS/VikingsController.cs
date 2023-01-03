@@ -6,7 +6,6 @@ using System.Linq;
 using System.Net;
 using TMPro;
 using Unity.VisualScripting;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using Color = System.Drawing.Color;
 using Random = UnityEngine.Random;
@@ -18,7 +17,6 @@ public class VikingsController : MonoBehaviour
     public class Viking
     {
         public bool GoldShown;
-        public int VColor;
         public int Health;
         public Vector3 V_position;
         public float Doordist;
@@ -28,11 +26,11 @@ public class VikingsController : MonoBehaviour
 
         public GameObject VikingObject;
 
-        public Viking(bool goldShown, int vcolor, int health, Vector3 vPosition, float doordist,
+        public Viking(bool goldShown, int health, Vector3 vPosition, float doordist,
             GameObject vikingObject)
         {
             GoldShown = goldShown;
-            VColor = vcolor;
+            
             Health = health;
             V_position = vPosition;
             Doordist = doordist;
@@ -85,9 +83,11 @@ public class VikingsController : MonoBehaviour
     //---------------- массив цветов для покраски викингов (шоб разные были) ----------------------- 
     // пока не работет
     private static List<string> colorlist = new List<string>()
-        { "green", "white", "blue", "pink", "yelow", "cyan", "magenta", "black" };
+        { //"green", "white", "blue", "pink", "yelow", "cyan", "magenta", "black"
+          "220,20,60", "255,20,147","139,0,0","173,255,47","106,90,205","139,0,139"
+        };
 
-    public int howmanycolors = colorlist.Count;
+    private int howmanycolors = colorlist.Count;
 
 
     //-----------------------------------------------------------------------------------------------
@@ -105,7 +105,7 @@ public class VikingsController : MonoBehaviour
     {
         LayGold();
 
-        // по концу цикла расстановки викингов долго сработать событие ВикингиВышли
+        // по концу цикла расстановки викингов должно сработать событие ВикингиВышли
         _thisfile.VikingiVyshli += VikingiToCHurch;
     }
 
@@ -161,13 +161,15 @@ public class VikingsController : MonoBehaviour
         //int HowmanyColumns = 3;
         // <----сколько викингов !!!!
         string thisvikingcolorname = null; // для рандомного цвета 
+        
 
         //=========== цикл делает викингов, сует в массив и расставляет в стартовую позицию ==========================
         for (int i = 0; i < howmanyvikings; i++)
         {
             //------------ выбирает рандомный цвет из массива (не могу всунуть в покраску) --------------
-            int thisvikingcolor = Random.Range(0, howmanycolors);
-            thisvikingcolorname = colorlist[thisvikingcolor].ToString();
+            // int thisvikingcolor = Random.Range(0, howmanycolors);
+            // thisvikingcolorname = colorlist[thisvikingcolor];
+            
 
             //------------ расстановка рядочками (можно наверное изящней, но как есть)-------------------
             _vstartX = _vstartX + _padding; //типо сдвинет вправо
@@ -187,7 +189,7 @@ public class VikingsController : MonoBehaviour
             //------------- заполняет массив -------------------------------------
             Vector3 v1Pos = new Vector3(_vstartX, _vstartY, 0);
             _vikingsArray.Add(new Viking(false, // пока без золота
-                thisvikingcolor,
+                
                 100, // пока все здоровенькие
                 v1Pos, // а почему тут пполе не подписывается?
                 0,
@@ -217,23 +219,26 @@ public class VikingsController : MonoBehaviour
                 ord_no++;
                 thisViking.GetComponent<SpriteRenderer>().sortingOrder = 100 + ord_no;
 
-                //--------- красим
+                //--------- красим двоих из каждых трёх ------------------
+                int thisvikingcolor = Random.Range(0, howmanycolors);
+                thisvikingcolorname = colorlist[thisvikingcolor];
+                
                 var paintornottopaint = Random.Range(0, 3);
-                if (paintornottopaint == 0)
+                if (paintornottopaint == 0 || paintornottopaint == 1 )
                 {
-                    thisViking.GetComponent<Renderer>().material.color = UnityEngine.Color.cyan;
+                    string[] zzzz = thisvikingcolorname.Split(",");
+                    int rr = Int32.Parse(zzzz[0]);
+                    int gg = Int32.Parse(zzzz[1]);
+                    int bb = Int32.Parse(zzzz[2]);
+
+                    float rf = rr / (float) 255;
+                    float gf = gg / (float) 255;
+                    float bf = bb / (float) 255;
+                    
+                    thisViking.GetComponent<Renderer>().material.color = new UnityEngine.Color(rf, gf, bf, 1);
                 }
-
-                if (paintornottopaint == 1)
-                {
-                    thisViking.GetComponent<Renderer>().material.color = UnityEngine.Color.red;
-                }
-                // Color.FromName(thisvikingcolor); - тоже не работает
-                // ????????????????????????????????????????????????????????
-                // ????????? КАК всунуть стринговую переменную в команду Color??? ??????????????????????
-                // ???????????????????????????????????????????????????????
-
-
+                //thisViking.GetComponent<Renderer>().material.color = UnityEngine.Color.red;
+                
                 // Debug.Log(" тадам "); // ==> ОНО ОТКЛАДЫВАЕТ ЭТО ДЕЙСТВИЕ НА 3с !!!!!!!!!!!!
 
                 // гениальная мысль от мужа!!!!
@@ -241,17 +246,15 @@ public class VikingsController : MonoBehaviour
                     VikingiVyshli?.Invoke();
             }
         } // конец цикла for
-
-        // VikingiVyshli?.Invoke();
-    }
+        
+    } //конец викинги из корабля
     //=================================================================================================================
 
     void VikingiToCHurch()
     {
         float vdoordist = 0; // переменная для высчитывания
 
-        //get position of the door
-        /*Vector3 */
+        //get position of the door -- Vector3 
         doorpos = _door.transform.position;
 
         // item ибо у нас класс
@@ -268,19 +271,11 @@ public class VikingsController : MonoBehaviour
 
             Debug.Log($"Dist for Viking {_vikingsArray.IndexOf(item)} -- {vdoordist}");
         }
-
-
-        // перебрть новый массив и найти меньшее 
+        
+        // пересортировать список викингов в зависимости от ближайшего к двери
         _vikingsArray = _vikingsArray.OrderBy(ch => ch.Doordist).ToList();
 
-
-        // теперь по очереди должны идти к двери
-        // foreach (Viking item in _vikingsArray)
-        // {
-        //     VikingGoesToDoor();
-        //
-        // }
-
+        // теперь по очереди должны идти к двери - в Update!
         AllowVikingsGo = true;
     }
 
@@ -289,45 +284,13 @@ public class VikingsController : MonoBehaviour
     {
         if (AllowVikingsGo)
         {
-            // Идут до двери
-            /*
-            foreach (Viking item in _vikingsArray)
-            {
-                Vector3 v = item.VikingObject.GetComponent<SpriteRenderer>().transform.position;
-                v = Vector3.MoveTowards(v, doorpos, 5 * Time.deltaTime);
-                item.VikingObject.GetComponent<SpriteRenderer>().transform.position = v;
-            }
-            */
-
-
-            // Идут до золота
-            // foreach (Viking item in _vikingsArray)
-            // {
-            //     Vector3 v = item.VikingObject.GetComponent<SpriteRenderer>().transform.position;
-            //     // v = Vector3.MoveTowards(v, doorpos, 5 * Time.deltaTime);
-            //     v = Vector3.MoveTowards(v, goldarray[_vikingsArray.IndexOf(item)].G_position, 5 * Time.deltaTime);
-            //     item.VikingObject.GetComponent<SpriteRenderer>().transform.position = v; 
-            // }           
-
-
-            // StartCoroutine("GoToDoors");
+            // анимация похода викингов от корабля до двери, а затем к золоту
             StartCoroutine(GoToGold());
         }
     }
+    
 
-    // IEnumerator GoToDoors()
-    // {
-    //     foreach (Viking item in _vikingsArray)
-    //     {
-    //         Vector3 v = item.VikingObject.GetComponent<SpriteRenderer>().transform.position;
-    //         v = Vector3.MoveTowards(v, doorpos, 5 * Time.deltaTime);
-    //         
-    //
-    //         yield return new WaitForSeconds(0.3f);
-    //     }
-    // }
-
-
+    //----------------------------- идут до двери и до золота ---------------------------------------------------
     IEnumerator GoToGold()
     {
         foreach (Viking item in _vikingsArray)
@@ -358,9 +321,12 @@ public class VikingsController : MonoBehaviour
                         GotGold?.Invoke(oneviking);
                     }
                 }
+                
+                // в очереь всех 
             }
 
-            item.VikingObject.GetComponent<SpriteRenderer>().sortingOrder = 100 + _vikingsArray.IndexOf(item);
+            // Задать новый ордер для викинга - задние позади, передние впереди
+            item.VikingObject.GetComponent<SpriteRenderer>().sortingOrder = 150 + (_vikingsArray.IndexOf(item) * 2);
             item.VikingObject.GetComponent<SpriteRenderer>().transform.position = v;
 
             yield return new WaitForSeconds(0.3f);

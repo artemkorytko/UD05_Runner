@@ -266,8 +266,8 @@ MonoBehaviour:
   _door: {fileID: 1624572126}
   _padding: 0.5
   _vikingsArray: []
-  V_Door_dist: []
-  howmanycolors: 8
+  doorpos: {x: 0, y: 0, z: 0}
+  howmanycolors: 0
 --- !u!4 &845342288
 Transform:
   m_ObjectHideFlags: 0
