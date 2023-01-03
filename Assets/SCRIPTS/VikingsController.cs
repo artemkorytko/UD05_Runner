@@ -7,6 +7,7 @@ using System.Net;
 using DG.Tweening;
 using Runner;
 using TMPro;
+using UnityEditor;
 using UnityEngine;
 using Color = System.Drawing.Color;
 using Random = UnityEngine.Random;
@@ -62,6 +63,7 @@ public class VikingsController : MonoBehaviour
     [SerializeField] private GameObject _goldprefab;
     [SerializeField] private GameObject _vikingprefab;
     [SerializeField] private GameObject _door;
+    [SerializeField] private GameObject _outpoint;
 
     [SerializeField] private float _padding = 0.5f; // расстановка по сетке
 
@@ -86,7 +88,7 @@ public class VikingsController : MonoBehaviour
     public event Action <VikingHimself> GotGold;
 
     public Vector3 doorpos;
-
+    private Vector3 outpos;
 
     private Queue<Viking> _vikQueue;
     private Stack<Viking> _vikStack;
@@ -119,14 +121,18 @@ public class VikingsController : MonoBehaviour
     //-----------------------------------------------------------------------------------------------
     void Start()
     {
+       
+        
         LayGold();
 
         // по концу цикла расстановки викингов должно сработать событие ВикингиВышли
         _thisfile.VikingiVyshli += VikingiToCHurch;
+        
+         
     }
 
+    
     //-----------------------------------------------------------------------------------------------
-
     #region LayGold
 
     private void LayGold()
@@ -271,12 +277,16 @@ public class VikingsController : MonoBehaviour
     } //конец викинги из корабля
     //=================================================================================================================
 
+    
     void VikingiToCHurch()
     {
         float vdoordist = 0; // переменная для высчитывания
 
         //get position of the door -- Vector3 
         doorpos = _door.transform.position;
+        
+        // берет с объекта котороый поставили руками координату, куда викинги будут выходить
+        outpos = _outpoint.transform.position;
 
         // item ибо у нас класс
         foreach (Viking item in _vikingsArray)
@@ -299,8 +309,9 @@ public class VikingsController : MonoBehaviour
         // теперь по очереди должны идти к двери - в Update!
         //AllowVikingsGo = true;
 
-        // пихание викингов в ОЧЕРЕДЬ ------------------------------------------------------------- :/
+        // пихание викингов в ОЧЕРЕДЬ ------------------------------------------------------------------ :/
         _vikQueue = new Queue<Viking>(howmanyvikings);
+        _vikStack = new Stack<Viking>(howmanyvikings);
 
         for (int i = 0; i < howmanyvikings; i++)
         {
@@ -311,17 +322,17 @@ public class VikingsController : MonoBehaviour
         //у нас есть очередь викингов, первым стоит крайний к двери
         for (int i = 0; i < howmanyvikings; i++)
         {
-            
-             GameObject queueviking = _vikQueue.Peek().VikingObject;
+            GameObject queueviking = _vikQueue.Peek().VikingObject;
 
-             DOTween.Sequence()
-                 .AppendInterval(i)
-                 .Append(queueviking.transform.DOMove(doorpos, 3))
-                 .AppendInterval(2f)
-                 .Append(queueviking.transform.DOMove(_goldarray[i].G_position, 2))
-                 .AppendCallback(IhavetheGold)
-                 .AppendInterval(2f);
-             
+            DOTween.Sequence()
+                .AppendInterval(i)
+                .Append(queueviking.transform.DOMove(doorpos, 2))
+                .AppendInterval(0.3f)
+                .Append(queueviking.transform.DOMove(_goldarray[i].G_position, 1))
+                .AppendCallback(IhavetheGold)
+                .AppendInterval(2f)
+                .AppendCallback(NowGoAway);
+
             // _vikToGoldAnimation.Append(queueviking.transform.DOMove(doorpos, 3)).AppendInterval(2)
             //     .Append(queueviking.transform.DOMove(_goldarray[i].G_position, 2)).AppendInterval(2);
             //     
@@ -336,8 +347,8 @@ public class VikingsController : MonoBehaviour
                     GotGold?.Invoke(oneviking);
 
                     // а кучке золота с этим номером надо отключить видимость
-                    // пока ошибка -  выключает всем!
-                    _goldarray[i].GoldObject.SetActive(false);
+                    // прикооол i-1 случайно написала когда не работало...))))
+                    _goldarray[i-1].GoldObject.SetActive(false);
                 }
             }
 
@@ -345,24 +356,41 @@ public class VikingsController : MonoBehaviour
             _vikQueue.Dequeue();
             
             // потом засунуть его жев стак............
-            //public Stack<Viking> _vikStack;
-        }
-
-
-        
-
+            // public Stack<Viking> _vikStack;
+             _vikStack.Push(_vikingsArray[i]);     
+        }//конец for
         
     } // конец викинги ту черч
 
     
+    //=================================================================================================================
+    void NowGoAway()
+    {
+        
+            GameObject stackviking = _vikStack.Peek().VikingObject;
+            CarryGoldOut();
+            _vikStack.Pop();
+            
+            
+            void CarryGoldOut()
+            { 
+                DOTween.Sequence()
+                .Append(stackviking.transform.DOMove(doorpos, 2))
+                .AppendInterval(0.3f)
+                .Append(stackviking.transform.DOMove(outpos, 2));
+            }
+        
+    }
+
+
 
     void Update()
         {
-            if (AllowVikingsGo)
-            {
-                // старая анимация похода викингов от корабля до двери, а затем к золоту
-                // StartCoroutine(GoToGold());
-            }
+            // if (AllowVikingsGo)
+            // {
+            //     // старая анимация похода викингов от корабля до двери, а затем к золоту
+            //     // StartCoroutine(GoToGold());
+            // }
         }
     
         #region Old Animation in Update
@@ -412,22 +440,9 @@ public class VikingsController : MonoBehaviour
     
     
     
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
         private void OnDestroy()
         {
             _vikingKorablfile.Priplyl -= VikingiIzKorablya;
         }
+        
 }
