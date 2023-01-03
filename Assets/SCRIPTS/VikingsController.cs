@@ -7,6 +7,7 @@ using System.Net;
 using DG.Tweening;
 using Runner;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using Color = System.Drawing.Color;
@@ -83,12 +84,17 @@ public class VikingsController : MonoBehaviour
 
     // разрешаем идти к цервки
     private bool AllowVikingsGo;
+    
+    // первый вошел - священник поднимет канделябр
+    bool flagFirstEntered = false; 
 
     private event Action VikingiVyshli;
     public event Action <VikingHimself> GotGold;
+    public event Action FirstVikingEntered;
 
     public Vector3 doorpos;
     private Vector3 outpos;
+    private float outposOffset = 0.2f; // сдвиг викингов на финальной позиции возле корабля в рядочек
 
     private Queue<Viking> _vikQueue;
     private Stack<Viking> _vikStack;
@@ -300,7 +306,7 @@ public class VikingsController : MonoBehaviour
             // суём дистанцию в массив
             item.Doordist = vdoordist;
 
-            Debug.Log($"Dist for Viking {_vikingsArray.IndexOf(item)} -- {vdoordist}");
+            //Debug.Log($"Dist for Viking {_vikingsArray.IndexOf(item)} -- {vdoordist}");
         }
 
         // пересортировать список викингов в зависимости от ближайшего к двери
@@ -313,6 +319,8 @@ public class VikingsController : MonoBehaviour
         _vikQueue = new Queue<Viking>(howmanyvikings);
         _vikStack = new Stack<Viking>(howmanyvikings);
 
+        
+
         for (int i = 0; i < howmanyvikings; i++)
         {
             _vikQueue.Enqueue(_vikingsArray[i]);
@@ -322,42 +330,51 @@ public class VikingsController : MonoBehaviour
         //у нас есть очередь викингов, первым стоит крайний к двери
         for (int i = 0; i < howmanyvikings; i++)
         {
+            var whichGoldPile = _goldarray[i];
+            
             GameObject queueviking = _vikQueue.Peek().VikingObject;
 
             DOTween.Sequence()
                 .AppendInterval(i)
                 .Append(queueviking.transform.DOMove(doorpos, 2))
                 .AppendInterval(0.3f)
-                .Append(queueviking.transform.DOMove(_goldarray[i].G_position, 1))
+                .AppendCallback(PriestReady)
+                .Append(queueviking.transform.DOMove(whichGoldPile.G_position, 1))
                 .AppendCallback(IhavetheGold)
                 .AppendInterval(2f)
                 .AppendCallback(NowGoAway);
 
             // _vikToGoldAnimation.Append(queueviking.transform.DOMove(doorpos, 3)).AppendInterval(2)
             //     .Append(queueviking.transform.DOMove(_goldarray[i].G_position, 2)).AppendInterval(2);
-            //     
             // _vikToGoldAnimation.Kill();
             
-            // у чела в очереди берет сего компоненту и вызывает изменения в его личном префабе (показал золото)
+            // у чела в очереди берет его компоненту и вызывает изменения в его личном экземпляре префаба (показал золото)
             void IhavetheGold()
             {
+                // кучке золота с этим номером надо отключить видимость
+                // прикооол i-1 случайно написала когда не работало...))))
+                // с минусом работает вообще
+                // !!!! РАЗОБРАТЬСЯ ПОЧЕМУ ТАКОЙ ИНДЕКС?????????????????????
+                whichGoldPile.GoldObject.SetActive(false);
+                
                 if (queueviking.TryGetComponent(out VikingHimself oneviking))
                 {
                     // это чудно работает
                     GotGold?.Invoke(oneviking);
 
-                    // а кучке золота с этим номером надо отключить видимость
-                    // прикооол i-1 случайно написала когда не работало...))))
-                    _goldarray[i-1].GoldObject.SetActive(false);
                 }
             }
-
+            
+            
             // выкинет из очереди??
             _vikQueue.Dequeue();
             
             // потом засунуть его жев стак............
             // public Stack<Viking> _vikStack;
-             _vikStack.Push(_vikingsArray[i]);     
+             _vikStack.Push(_vikingsArray[i]);   
+             
+             // почему три викинга остаются :/
+             Debug.Log($"Stack {_vikStack.Count} and -- Queue{_vikQueue.Count}" );
         }//конец for
         
     } // конец викинги ту черч
@@ -366,10 +383,10 @@ public class VikingsController : MonoBehaviour
     //=================================================================================================================
     void NowGoAway()
     {
-        
-            GameObject stackviking = _vikStack.Peek().VikingObject;
+        GameObject stackviking = _vikStack.Peek().VikingObject;
             CarryGoldOut();
             _vikStack.Pop();
+            
             
             
             void CarryGoldOut()
@@ -377,66 +394,77 @@ public class VikingsController : MonoBehaviour
                 DOTween.Sequence()
                 .Append(stackviking.transform.DOMove(doorpos, 2))
                 .AppendInterval(0.3f)
-                .Append(stackviking.transform.DOMove(outpos, 2));
+                .Append(stackviking.transform.DOMove(new Vector3(outpos.x + outposOffset,outpos.y ,outpos.z), 2));
+
+                outposOffset += 0.1f;
             }
-        
     }
 
-
+    //--------------- передает в священника и меняет флаг --------------------------------------------------
+    void PriestReady()
+    {
+        if (!flagFirstEntered) // проверка, чтобы больше не запускалось
+        {
+            // событие что викинги ломятся - уходит священнику
+            FirstVikingEntered?.Invoke();
+            Debug.Log("Первый Викинг вошел!!!");
+            flagFirstEntered = true;
+        }
+    }
 
     void Update()
         {
             // if (AllowVikingsGo)
             // {
-            //     // старая анимация похода викингов от корабля до двери, а затем к золоту
+            //     // старая безтвиновая анимация похода викингов от корабля до двери, а затем к золоту
             //     // StartCoroutine(GoToGold());
             // }
         }
     
         #region Old Animation in Update
     
-    //----------------------------- идут до двери и до золота ---------------------------------------------------
-    // IEnumerator GoToGold()
-    // {
-    //     foreach (Viking item in _vikingsArray)
-    //     {
-    //         Vector3 v = item.VikingObject.GetComponent<SpriteRenderer>().transform.position;
-    //
-    //         if (item.isGoToDoor)
-    //         {
-    //             v = Vector3.MoveTowards(v, doorpos, 5 * Time.deltaTime);
-    //             if (Vector3.Distance(v, doorpos) == 0)
-    //             {
-    //                 item.isGoToDoor = false;
-    //                 item.isGoToGold = true;
-    //             }
-    //         }
-    //
-    //         if (item.isGoToGold)
-    //         {
-    //             v = Vector3.MoveTowards(v, _goldarray[_vikingsArray.IndexOf(item)].G_position, 5 * Time.deltaTime);
-    //             if (Vector3.Distance(v, _goldarray[_vikingsArray.IndexOf(item)].G_position) == 0)
-    //             {
-    //                 item.isGoToDoor = false;
-    //                 item.isGoToGold = false;
-    //                 item.GoldShown = true;
-    //
-    //                 if (item.VikingObject.TryGetComponent(out VikingHimself oneviking))
-    //                 {
-    //                     GotGold?.Invoke(oneviking);
-    //                 }
-    //             }
-    //             
-    //             // в очереь всех 
-    //         }
-    //
-    //         // Задать новый ордер для викинга - задние позади, передние впереди
-    //         item.VikingObject.GetComponent<SpriteRenderer>().sortingOrder = 150 + (_vikingsArray.IndexOf(item) * 2);
-    //         item.VikingObject.GetComponent<SpriteRenderer>().transform.position = v;
-    //
-    //         yield return new WaitForSeconds(0.3f);
-    //     }
-    #endregion
+            //----------------------------- идут до двери и до золота ---------------------------------------------------
+            // IEnumerator GoToGold()
+            // {
+            //     foreach (Viking item in _vikingsArray)
+            //     {
+            //         Vector3 v = item.VikingObject.GetComponent<SpriteRenderer>().transform.position;
+            //
+            //         if (item.isGoToDoor)
+            //         {
+            //             v = Vector3.MoveTowards(v, doorpos, 5 * Time.deltaTime);
+            //             if (Vector3.Distance(v, doorpos) == 0)
+            //             {
+            //                 item.isGoToDoor = false;
+            //                 item.isGoToGold = true;
+            //             }
+            //         }
+            //
+            //         if (item.isGoToGold)
+            //         {
+            //             v = Vector3.MoveTowards(v, _goldarray[_vikingsArray.IndexOf(item)].G_position, 5 * Time.deltaTime);
+            //             if (Vector3.Distance(v, _goldarray[_vikingsArray.IndexOf(item)].G_position) == 0)
+            //             {
+            //                 item.isGoToDoor = false;
+            //                 item.isGoToGold = false;
+            //                 item.GoldShown = true;
+            //
+            //                 if (item.VikingObject.TryGetComponent(out VikingHimself oneviking))
+            //                 {
+            //                     GotGold?.Invoke(oneviking);
+            //                 }
+            //             }
+            //             
+            //             // в очереь всех 
+            //         }
+            //
+            //         // Задать новый ордер для викинга - задние позади, передние впереди
+            //         item.VikingObject.GetComponent<SpriteRenderer>().sortingOrder = 150 + (_vikingsArray.IndexOf(item) * 2);
+            //         item.VikingObject.GetComponent<SpriteRenderer>().transform.position = v;
+            //
+            //         yield return new WaitForSeconds(0.3f);
+            //     }
+        #endregion
     
     
     

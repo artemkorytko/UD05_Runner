@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class V_PriestController : MonoBehaviour
@@ -11,8 +12,10 @@ public class V_PriestController : MonoBehaviour
     private Rigidbody _priestrigidbody;
     private Rigidbody _kandrigidbody;
 
+    private VikingsController _vikifile;
+    
     private float moveSpeed = 5f; // скорость священника
-    private bool zamah = true; // флаг для поднятия канделябра
+    private bool zamah = true; // флаг для поднятия канделябра - О_о пишет ошибку что не используется???
 
     private bool isPressedSpace = false; // флаг нажатого пробела
 
@@ -24,14 +27,20 @@ public class V_PriestController : MonoBehaviour
         _priestrigidbody = GetComponent<Rigidbody>();
         _kandrigidbody = _kandelabr.GetComponentInChildren<Rigidbody>();
 
-        // поставить по событию "1й викинг вошел!" потом!!!!!!!!!!!!!!!!
-        if (zamah)
-        {
-            _kandelabr.transform.Rotate(0, 0, -90);
-        }
+        // подписка на главный файл, где событие что первый зашел
+        _vikifile = FindObjectOfType<VikingsController>();
+        _vikifile.FirstVikingEntered += PodnjatKandeliabr;
     }
 
-    //
+    private void PodnjatKandeliabr()
+    {
+        _kandelabr.transform.Rotate(0, 0, -90);
+        zamah = true;
+    }
+
+    
+    
+    // не работает от слова вообще
     private void StayInChurch()
     {
         var position = _priest.transform.position;
@@ -142,17 +151,11 @@ public class V_PriestController : MonoBehaviour
             BumPoBashke?.Invoke(bashka);
         }
     }
-    
-    
-    
 
-    // void OnCollisionEnter(Collision collision)
-    // {
-    //     Debug.Log("OnCollisionEnter: Ата-та!");
-    //     
-    //     if (collision.transform.parent.TryGetComponent(out VikingMarker bashka))
-    //     {
-    //         BumPoBashke?.Invoke(); // вызовет пропажу золота у викинга и выход из церкви
-    //     }
-    // }
+
+    private void OnDestroy()
+    {
+        _vikifile.FirstVikingEntered -= PodnjatKandeliabr;
+    }
+
 }
