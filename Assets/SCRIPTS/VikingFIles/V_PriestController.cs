@@ -40,7 +40,7 @@ public class V_PriestController : MonoBehaviour
 
     
     
-    // не работает от слова вообще
+    // не работает от слова вообще, даже если сувать в апдейт на каждую функцию
     private void StayInChurch()
     {
         var position = _priest.transform.position;

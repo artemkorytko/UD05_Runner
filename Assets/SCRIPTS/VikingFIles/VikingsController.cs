@@ -134,6 +134,8 @@ public class VikingsController : MonoBehaviour
 
         // по концу цикла расстановки викингов должно сработать событие ВикингиВышли
         _thisfile.VikingiVyshli += VikingiToCHurch;
+        
+        // когда попали по викингу - анимация киляется и инстантиэйтим новое золото на этом месте
         _v_priescofile.BumPoBashke += DropGold;
     }
 
