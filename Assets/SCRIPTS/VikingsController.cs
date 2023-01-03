@@ -4,11 +4,13 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Net;
+using DG.Tweening;
+using Runner;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using Color = System.Drawing.Color;
 using Random = UnityEngine.Random;
+using Sequence = Unity.VisualScripting.Sequence;
 
 //================ КОНТРОЛЛЕР ВСЕЙ СЦЕНЫ ТУТ ============================================
 public class VikingsController : MonoBehaviour
@@ -21,8 +23,9 @@ public class VikingsController : MonoBehaviour
         public Vector3 V_position;
         public float Doordist;
 
-        public bool isGoToDoor = true;
-        public bool isGoToGold = false;
+        // муж написал это посреди класса О_о
+        // public bool isGoToDoor = true;
+        // public bool isGoToGold = false;
 
         public GameObject VikingObject;
 
@@ -43,9 +46,12 @@ public class VikingsController : MonoBehaviour
     {
         public Vector3 G_position;
 
-        public Gold(Vector3 gPosition) // че пишууууу?
+        public GameObject GoldObject;
+
+        public Gold(Vector3 gPosition, GameObject goldObject) // че пишууууу?
         {
             G_position = gPosition;
+            GoldObject = goldObject;
         }
     }
 
@@ -65,10 +71,13 @@ public class VikingsController : MonoBehaviour
 
     private VikingKorabl _vikingKorablfile; // подключение файла с кораблем
     int howmanyvikings = 13;
-
+    
     private VikingsController _thisfile;
 
+    // все для правильной расстановки слоев
     private int ord_no;
+    private int gold_layerorder = 50;
+    private int viking_layerorder = 100;
 
     // разрешаем идти к цервки
     private bool AllowVikingsGo;
@@ -77,8 +86,15 @@ public class VikingsController : MonoBehaviour
     public event Action <VikingHimself> GotGold;
 
     public Vector3 doorpos;
+
+
+    private Queue<Viking> _vikQueue;
+    private Stack<Viking> _vikStack;
+
+    private DG.Tweening.Sequence _vikToGoldAnimation;
     //---------------------------------------------------------------------------------------------
 
+    
 
     //---------------- массив цветов для покраски викингов (шоб разные были) ----------------------- 
     // пока не работет
@@ -86,8 +102,7 @@ public class VikingsController : MonoBehaviour
         { //"green", "white", "blue", "pink", "yelow", "cyan", "magenta", "black"
           "220,20,60", "255,20,147","139,0,0","173,255,47","106,90,205","139,0,139"
         };
-
-    private int howmanycolors = colorlist.Count;
+    private int howmanycolors = colorlist.Count; // length - ленгтх само меняет на каунт
 
 
     //-----------------------------------------------------------------------------------------------
@@ -97,6 +112,7 @@ public class VikingsController : MonoBehaviour
         _vikingKorablfile.Priplyl += VikingiIzKorablya; //подписка на приплытие изнутри корабля
 
         _thisfile = FindObjectOfType<VikingsController>();
+        _vikToGoldAnimation = DOTween.Sequence();
     }
 
 
@@ -134,14 +150,19 @@ public class VikingsController : MonoBehaviour
             }
 
             Vector3 g1Pos = new Vector3(_gstartX, _gstartY, 0);
-
-            // ---- в массив идет только свежерассчитанная позиция 
-            _goldarray.Add(new Gold(g1Pos));
-
-            // !!----- внимание, использует координаты из массива !!! ---------
-            var thisGold = Instantiate(_goldprefab, _goldarray[i].G_position, Quaternion.identity, transform);
+            // ----  свежерассчитанная позиция 
+           
+            
+            var thisGold = Instantiate(_goldprefab, g1Pos, Quaternion.identity, transform);
+            
+            // сначала ставит, потом фигачит в массив с позицией и ссылкой (!) на конкретное золотишко
+            _goldarray.Add(new Gold(g1Pos, thisGold));
+             //_goldarray[i].GoldObject = thisGold;
+             //_goldarray[i].G_position = g1Pos;
+             
             ord_no_gold++;
-            thisGold.GetComponent<SpriteRenderer>().sortingOrder = 50 + ord_no;
+            // ord_no надо, чтобы они правильно накладывались, gold_layerorder задан в начале
+            thisGold.GetComponent<SpriteRenderer>().sortingOrder = gold_layerorder + ord_no;
         }
     }
 
@@ -217,7 +238,7 @@ public class VikingsController : MonoBehaviour
 
                 // Order! ------!!! номер в слое !!!--------------------------
                 ord_no++;
-                thisViking.GetComponent<SpriteRenderer>().sortingOrder = 100 + ord_no;
+                thisViking.GetComponent<SpriteRenderer>().sortingOrder = viking_layerorder + ord_no;
 
                 //--------- красим двоих из каждых трёх ------------------
                 int thisvikingcolor = Random.Range(0, howmanycolors);
@@ -271,70 +292,142 @@ public class VikingsController : MonoBehaviour
 
             Debug.Log($"Dist for Viking {_vikingsArray.IndexOf(item)} -- {vdoordist}");
         }
-        
+
         // пересортировать список викингов в зависимости от ближайшего к двери
         _vikingsArray = _vikingsArray.OrderBy(ch => ch.Doordist).ToList();
 
         // теперь по очереди должны идти к двери - в Update!
-        AllowVikingsGo = true;
-    }
+        //AllowVikingsGo = true;
 
+        // пихание викингов в ОЧЕРЕДЬ ------------------------------------------------------------- :/
+        _vikQueue = new Queue<Viking>(howmanyvikings);
 
-    void Update()
-    {
-        if (AllowVikingsGo)
+        for (int i = 0; i < howmanyvikings; i++)
         {
-            // анимация похода викингов от корабля до двери, а затем к золоту
-            StartCoroutine(GoToGold());
+            _vikQueue.Enqueue(_vikingsArray[i]);
         }
-    }
+
+
+        //у нас есть очередь викингов, первым стоит крайний к двери
+        for (int i = 0; i < howmanyvikings; i++)
+        {
+            
+             GameObject queueviking = _vikQueue.Peek().VikingObject;
+
+             DOTween.Sequence()
+                 .AppendInterval(i)
+                 .Append(queueviking.transform.DOMove(doorpos, 3))
+                 .AppendInterval(2f)
+                 .Append(queueviking.transform.DOMove(_goldarray[i].G_position, 2))
+                 .AppendCallback(IhavetheGold)
+                 .AppendInterval(2f);
+             
+            // _vikToGoldAnimation.Append(queueviking.transform.DOMove(doorpos, 3)).AppendInterval(2)
+            //     .Append(queueviking.transform.DOMove(_goldarray[i].G_position, 2)).AppendInterval(2);
+            //     
+            // _vikToGoldAnimation.Kill();
+            
+            // у чела в очереди берет сего компоненту и вызывает изменения в его личном префабе (показал золото)
+            void IhavetheGold()
+            {
+                if (queueviking.TryGetComponent(out VikingHimself oneviking))
+                {
+                    // это чудно работает
+                    GotGold?.Invoke(oneviking);
+
+                    // а кучке золота с этим номером надо отключить видимость
+                    // пока ошибка -  выключает всем!
+                    _goldarray[i].GoldObject.SetActive(false);
+                }
+            }
+
+            // выкинет из очереди??
+            _vikQueue.Dequeue();
+            
+            // потом засунуть его жев стак............
+            //public Stack<Viking> _vikStack;
+        }
+
+
+        
+
+        
+    } // конец викинги ту черч
+
     
 
-    //----------------------------- идут до двери и до золота ---------------------------------------------------
-    IEnumerator GoToGold()
-    {
-        foreach (Viking item in _vikingsArray)
+    void Update()
         {
-            Vector3 v = item.VikingObject.GetComponent<SpriteRenderer>().transform.position;
-
-            if (item.isGoToDoor)
+            if (AllowVikingsGo)
             {
-                v = Vector3.MoveTowards(v, doorpos, 5 * Time.deltaTime);
-                if (Vector3.Distance(v, doorpos) == 0)
-                {
-                    item.isGoToDoor = false;
-                    item.isGoToGold = true;
-                }
+                // старая анимация похода викингов от корабля до двери, а затем к золоту
+                // StartCoroutine(GoToGold());
             }
-
-            if (item.isGoToGold)
-            {
-                v = Vector3.MoveTowards(v, _goldarray[_vikingsArray.IndexOf(item)].G_position, 5 * Time.deltaTime);
-                if (Vector3.Distance(v, _goldarray[_vikingsArray.IndexOf(item)].G_position) == 0)
-                {
-                    item.isGoToDoor = false;
-                    item.isGoToGold = false;
-                    item.GoldShown = true;
-
-                    if (item.VikingObject.TryGetComponent(out VikingHimself oneviking))
-                    {
-                        GotGold?.Invoke(oneviking);
-                    }
-                }
-                
-                // в очереь всех 
-            }
-
-            // Задать новый ордер для викинга - задние позади, передние впереди
-            item.VikingObject.GetComponent<SpriteRenderer>().sortingOrder = 150 + (_vikingsArray.IndexOf(item) * 2);
-            item.VikingObject.GetComponent<SpriteRenderer>().transform.position = v;
-
-            yield return new WaitForSeconds(0.3f);
         }
-    }
+    
+        #region Old Animation in Update
+    
+    //----------------------------- идут до двери и до золота ---------------------------------------------------
+    // IEnumerator GoToGold()
+    // {
+    //     foreach (Viking item in _vikingsArray)
+    //     {
+    //         Vector3 v = item.VikingObject.GetComponent<SpriteRenderer>().transform.position;
+    //
+    //         if (item.isGoToDoor)
+    //         {
+    //             v = Vector3.MoveTowards(v, doorpos, 5 * Time.deltaTime);
+    //             if (Vector3.Distance(v, doorpos) == 0)
+    //             {
+    //                 item.isGoToDoor = false;
+    //                 item.isGoToGold = true;
+    //             }
+    //         }
+    //
+    //         if (item.isGoToGold)
+    //         {
+    //             v = Vector3.MoveTowards(v, _goldarray[_vikingsArray.IndexOf(item)].G_position, 5 * Time.deltaTime);
+    //             if (Vector3.Distance(v, _goldarray[_vikingsArray.IndexOf(item)].G_position) == 0)
+    //             {
+    //                 item.isGoToDoor = false;
+    //                 item.isGoToGold = false;
+    //                 item.GoldShown = true;
+    //
+    //                 if (item.VikingObject.TryGetComponent(out VikingHimself oneviking))
+    //                 {
+    //                     GotGold?.Invoke(oneviking);
+    //                 }
+    //             }
+    //             
+    //             // в очереь всех 
+    //         }
+    //
+    //         // Задать новый ордер для викинга - задние позади, передние впереди
+    //         item.VikingObject.GetComponent<SpriteRenderer>().sortingOrder = 150 + (_vikingsArray.IndexOf(item) * 2);
+    //         item.VikingObject.GetComponent<SpriteRenderer>().transform.position = v;
+    //
+    //         yield return new WaitForSeconds(0.3f);
+    //     }
+    #endregion
+    
+    
+    
 
-    private void OnDestroy()
-    {
-        _vikingKorablfile.Priplyl -= VikingiIzKorablya;
-    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+        private void OnDestroy()
+        {
+            _vikingKorablfile.Priplyl -= VikingiIzKorablya;
+        }
 }
