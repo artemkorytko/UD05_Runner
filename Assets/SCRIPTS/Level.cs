@@ -48,6 +48,9 @@ namespace Runner
         // счетчик уровня
         public int currentlevel = 0;
 
+        // ПОДКЛЮЧАЮ РАНДОМ МОНЕТОК
+        private RandomCoins _randomCoinsFile;
+        // public event Action GenerateRandomCoin; 
 
         //----------------переменные для стен и монеток---------------------
 
@@ -151,6 +154,10 @@ namespace Runner
         //----------------------------------------- стены И МОНЕТКИ --------------------------------------------------------
         private void GenerateWallsCoins()
         {
+            //подключились к файлу рандома монет
+            _randomCoinsFile = FindObjectOfType<RandomCoins>();
+            
+            
             // ---- расчёты----------надо высчитать всю длину трассы от начала до финиша
             fulllength = roadPartCount * roadPartLength; // 10 частей * 5 = 50
 
@@ -231,8 +238,14 @@ namespace Runner
                 var localCoinPosition = Vector3.zero; //  новая позиция 0,0,0
                 localCoinPosition.x = coinPositionX;
                 localCoinPosition.z = currentLength;
+                
                 // ставим монетки
-                Instantiate(coinPrefab, localCoinPosition, Quaternion.identity, transform);
+                // получаем рандомный префаб монетки
+                //++++++++++++++++NEW: РАНДОМ С ВЕСАМИ ++++++++++++++++++++++++++++++++++++++
+                //----------- АЛЛАХ ЗНАЕТ, КАК ЭТО РАБОТАЕТ ---------------------------------
+                GameObject a = _randomCoinsFile.GoGenerateCoin();
+                Instantiate(a, localCoinPosition, Quaternion.identity, transform);
+                //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
             }
         }
 
