@@ -1,53 +1,68 @@
-﻿using System;
+﻿using Runner.Configs;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 namespace Runner
 {
     public class Level : MonoBehaviour
     {
-        [Header("Prefabs")] [SerializeField] private GameObject _playerPrefab;
-        [SerializeField] private GameObject _finihsPrefab;
-        [SerializeField] private GameObject _wallPrefab;
-        [SerializeField] private GameObject _roadPartPrefab;
-        [SerializeField] private GameObject _coinPrefab;
-        [SerializeField] private ParticleSystem _particlePrefab;
-
-        [Header("Settings Road")] 
-        [SerializeField] private int _roadPartCount = 10;
-        [SerializeField] private float _roadPartLength = 6f;
-        [SerializeField] private float _roadPartWidth = 6f;
-
-        [Header("Settings Walls")] 
-        [SerializeField]private float _minWallsOffset = 3f;
-        [SerializeField] private float _maxWallsOffset = 5f;
-
-        [Header(("Particle System"))] [SerializeField]
-        private float _distanceBetweenParticleAndFinish = 5f;
+         [SerializeField] private LevelConfig levelConfig;
+        
+         private GameObject _playerPrefab;
+         private GameObject _finihsPrefab; 
+         private GameObject _wallPrefab;
+         private GameObject _roadPartPrefab;
+         private GameObject _coinPrefab;
+         private ParticleSystem _particlePrefab;
+         
+         private int _chanceDropCoin = 70;
+         private int _roadPartCount = 10; 
+         private float _roadPartLength = 6f;
+         private float _roadPartWidth = 6f;
+         private float _minWallsOffset = 3f;
+         private float _maxWallsOffset = 5f;
+         private float _distanceBetweenParticleAndFinish = 5f;
         
         private PlayerController _player;
         private ParticleSystem _particle;
         
-        public PlayerController Player => _player; // ссылка на игрока
+        public PlayerController Player => _player; 
         public ParticleSystem ParticlePrefab => _particle;
 
         public void GenegateLevel()
         {
+            SetLevelConfig();
             Clear();
             GenegateRoadAndParticle();
             GenegatePlayer();
             GenegateWallsAndCois();
         }
 
+        private void SetLevelConfig()
+        {
+            _playerPrefab = levelConfig.PlayerPrefab;
+            _finihsPrefab = levelConfig.FinihsPrefab;
+            _coinPrefab = levelConfig.CoinPrefab;
+            _wallPrefab = levelConfig.WallPrefab;
+            _roadPartPrefab = levelConfig.RoadPartPrefab;
+            _particlePrefab = levelConfig.ParticlePrefab;
+
+            _chanceDropCoin = levelConfig.ChanceDropCoin;
+            _roadPartCount = levelConfig.RoadPartCount;
+
+            _roadPartLength = levelConfig.RoadPartLength;
+            _roadPartWidth = levelConfig.RoadPartWidth;
+            _minWallsOffset = levelConfig.MINWallsOffset;
+            _maxWallsOffset = levelConfig.MAXWallsOffset;
+            _distanceBetweenParticleAndFinish = levelConfig.DistanceBetweenParticleAndFinish;
+        }
+
         private void Clear()
         {
             for (int i = 0; i < transform.childCount; i++)
-            {
-                Destroy(transform.GetChild(i).gameObject); // удаление всех дочерних объектов ()
-            }
-
-            _player = null; // сброс ссылки плейера
+                Destroy(transform.GetChild(i).gameObject);
+            
+            _player = null;
         }
 
         public void RestartLevel()
@@ -110,16 +125,20 @@ namespace Runner
                 localPositionWall.x = wallPositionX;
                 localPositionWall.z = currentLength;
 
-                // для монет по X and Z
-                //var randomPositionCoinX = Random.Range(0, 3);
-                var coinPositionX = startPosX + wallOffsetX * (randomPositionX != 0 ? randomPositionX != 2  ? 0 : 1 : 2);
-
-                var localPositionCoin = Vector3.zero;
-                localPositionCoin.z = currentLength;// + 2f;
-                localPositionCoin.x = coinPositionX;
-
+                
+// шанс выпадания манетки 
+                var randon = Random.Range(0, 100);
+                if (randon <= _chanceDropCoin)
+                {
+                    var coinPositionX = startPosX + wallOffsetX * (randomPositionX != 0 ? randomPositionX != 2  ? 0 : 1 : 2);
+                    var localPositionCoin = Vector3.zero;
+                    localPositionCoin.z = currentLength;// + 2f;
+                    localPositionCoin.x = coinPositionX;
+                    Instantiate(_coinPrefab, localPositionCoin, Quaternion.identity, transform);
+                }
+                
                 Instantiate(_wallPrefab, localPositionWall, Quaternion.identity, transform);
-                Instantiate(_coinPrefab, localPositionCoin, Quaternion.identity, transform);
+                
             }
 
         }

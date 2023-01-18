@@ -25,8 +25,6 @@ namespace Runner
         public event Action Fail;
         public event Action<int> OnNextLevelIndex;
 
-      //  public PlayerController Player => _player;
-
         private int LevelIndex
         {
             get => _currentlevel;
@@ -48,7 +46,6 @@ namespace Runner
             
             _uiController.OnStartGame += StartGame;
             _uiController.OnRestartLevel += RestartCurrentLevel;
-            
         }
 
         private void OnDestroy()
@@ -72,7 +69,6 @@ namespace Runner
             {
                 OnAddCoin?.Invoke(_coins);
                 OnNextLevelIndex?.Invoke(_currentlevel);
-                //Debug.Log("events coin and levelIndex");
             }
             
             _level = Instantiate(_levelPrefab, transform);
@@ -111,8 +107,6 @@ namespace Runner
         private void OnDead()
         {
             StartCoroutine(FailWithDelay());  // запуск карутины (карутины привязаны к компаненту, если я выключу GameManager, то карутира также откл)
-            //StopCoroutine(); - останавливает карутину
-            //StopAllCoroutines(); - остановить все карутины (данный случай в компаненте GameManager)
         }
 
         private void OnWin()

@@ -1,16 +1,20 @@
 using System;
+using Runner.Configs;
 using UnityEngine;
 
 namespace Runner
 {
     public class PlayerController : MonoBehaviour
     {
-        [SerializeField] private float _forwardSpeed = 5f; 
-        [SerializeField] private float _sideSpeed = 5f; 
-        [SerializeField] private float _roadWidth = 5f;  // переменная для смещения в зависимости от ширины дороги (условно это ширина дороги / на 2)
-        [SerializeField] private float _turnRotationAngle = 30f; // максимальный угол поворота 
-        [SerializeField] private float _lerpSpeed = 5f; 
-        [SerializeField] private Transform _model; 
+        [SerializeField] private PlayerConfig playerConfig;
+        [SerializeField] private Transform model; 
+        
+        private float _forwardSpeed = 5f;
+        private float _sideSpeed = 5f; 
+        private float _roadWidth = 5f;  // переменная для смещения в зависимости от ширины дороги (условно это ширина дороги / на 2)
+        private float _turnRotationAngle = 40f; // максимальный угол поворота 
+        private float _lerpSpeed = 4f; 
+        
 
         private Rigidbody _rigidbody;
         private Animator _animator;
@@ -45,8 +49,10 @@ namespace Runner
             _rigidbody = GetComponent<Rigidbody>();
             _inputHandler = GetComponent<InputHandler>();
             _animator = GetComponentInChildren<Animator>();
-        }
 
+            SetSettings();
+        }
+        
         private void Start()
         {
             IsActive = true;
@@ -67,25 +73,15 @@ namespace Runner
             var xOffset = - _inputHandler.HorizontalAxis * _sideSpeed; // знак "-" при его отсутствии нажатие влево будет работать вправо(xOffset - смещение) 
             
             // поворачивается //
-            var rotation = _model.localRotation.eulerAngles; // запись углов модели
+            var rotation = model.localRotation.eulerAngles; // запись углов модели
             rotation.y = Mathf.LerpAngle(rotation.y, _inputHandler._isHold  ?  Mathf.Sign(xOffset) * _turnRotationAngle : 0,  // решить проблему в повороте!!!!!!!сюда смотри!!!!!!!
                 _lerpSpeed * Time.deltaTime); // плавное(LerpAngle) изменение поворота по оси Y(лево/право) в зависимости от xOffset(который определяет навровление поворота)
             // Mathf.Sign(xOffset) возвращает знак + или - нашего xOffset.
             
-
-            // if (_inputHandler.HorizontalAxis == 0)  ........ xOffset == 0 ? 0 : Mathf.Sign(xOffset) * _turnRotationAngle 
-            // {
-            //     rotation.y = Mathf.LerpAngle(rotation.y, 0, _lerpSpeed * Time.deltaTime);
-            // }
-            // else
-            // {
-            //     rotation.y = Mathf.LerpAngle(rotation.y, Mathf.Sign(xOffset) * _turnRotationAngle,
-            //         _lerpSpeed * Time.deltaTime);
-            // }
-             _model.localRotation = Quaternion.Euler(rotation);  // поворачивается переводим угол eulerAngles в Quaternion
-             
             
-            // идет //
+             model.localRotation = Quaternion.Euler(rotation);  // поворачивается переводим угол eulerAngles в Quaternion
+
+             // идет //
             var position = _rigidbody.position; // запись первоначальной позиции 
             position.x += xOffset; // изменение координаты X в напровление движения игрока - передается в _rigidbody.MovePosition();
             position.x = Mathf.Clamp(position.x, -_roadWidth * 0.5f, _roadWidth * 0.5f); // ограничение движения игрока по оси X в зависимости от ширины дороги
@@ -109,14 +105,22 @@ namespace Runner
                 coinComponent.gameObject.SetActive(false);
             }
         }
+        
+        private void SetSettings()
+        {
+            _forwardSpeed = playerConfig.ForwardSpeed;
+            _sideSpeed = playerConfig.SideSpeed;
+            _roadWidth = playerConfig.RoadWidth;
+            _turnRotationAngle = playerConfig.TurnRotationAngle;
+            _lerpSpeed = playerConfig.LerpSpeed;
+        }
 
         private void AddCoits()
         {
             _countCoits++;
             OnCoint?.Invoke(_countCoits);
         }
-
-        [ContextMenu("Died")] // атрибут в инспекторе можно вызывать метод (ПКМ) по компаненту
+        
         private void Died()
         {
             IsActive = false;
@@ -124,7 +128,6 @@ namespace Runner
             OnDead?.Invoke();
         }
         
-        [ContextMenu("Finish")]
         private void Finish()
         {
             IsActive = false;
