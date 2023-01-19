@@ -10,6 +10,11 @@ namespace Runner
     {
         [SerializeField] private Level levelPrefab;
 
+        // считает сколько типов уровня в awake
+        [SerializeField] private GameConfigsContainer container;
+        private int howmanylevels;
+        public int leveltype = 0;
+
         //поле для задержек в корутинах:
         [SerializeField] private float delay = 3f;
 
@@ -17,7 +22,7 @@ namespace Runner
         private PlayerController _playercontrollerfile;
 
         public int howMuchCoins = 0; //считаем монетки ЗА ВСЮ ИГРУ
-        
+
 
         public event Action LevelChanged; //событие для передачи на панель
         public event Action CoinsEncreqased; //событие для передачи на панель
@@ -25,7 +30,11 @@ namespace Runner
         private void Awake()
         {
             _level = Instantiate(levelPrefab, transform); // #######################[ внутрь текущего трансформа ??? ]
-            
+
+
+            // считает сколько типов уровня 
+            // container = FindObjectOfType<GameConfigsContainer>();
+            howmanylevels = container.howmanyLevelConfigs; //3 пришло
         }
 
         // пока на старте потом по кнопке
@@ -34,17 +43,13 @@ namespace Runner
             StartLevel(); //см. ниже, вынесли их чтобы не повторять. ПОТОМ ИЗ КНОПКИ
         }
 
-        
-        
-        
+
         //----------------------пытаюсь тут всунуть увеличение количества монеток. ОНО У МЕНЯ ОБЩЕЕ, НА ВСЕ УРОВНИ------
         public void PlusPlus(CoinComponent somewordwasCoin)
         {
             howMuchCoins++;
             CoinsEncreqased?.Invoke();
         }
-
-
 
 
         // выносим это в отдельный метод ибо левел генерится много раз
@@ -59,7 +64,7 @@ namespace Runner
             // подписки на события из плеера в PlayerController, ибо он там пересекает и стукается
             _level.Player.Dobezal += OnWin; // у АК тут опять одинаковые слова
             _level.Player.OnDie += OnDead;
-            
+
             // подписка для счетчика монет
             _playercontrollerfile = FindObjectOfType<PlayerController>();
             _playercontrollerfile.GetCoin += PlusPlus;
@@ -76,6 +81,9 @@ namespace Runner
         {
             // надо сделать задержку для того чтобы посмотрели анимацию -> корутины
             StartCoroutine(FailWithdelay());
+
+            // добвалено !
+            leveltype = 0;
         }
 
 
@@ -83,6 +91,14 @@ namespace Runner
         {
             // надо сделать задержку для того чтобы посмотрели анимацию > корутины
             StartCoroutine(WinWithdelay());
+
+            //--- добвалено с конфигами ------------------------------------------------
+            // если он подряд два выграл - то играет последний уровень, пока не врежется
+            //--------------------------------------------------------------------------
+            if (leveltype < howmanylevels - 1) // -1 ибо считает штуки конфигов в массиве
+            {
+                leveltype++;
+            }
         }
 
 
@@ -90,19 +106,12 @@ namespace Runner
         private IEnumerator WinWithdelay()
         {
             yield return ClearDelay();
-
-            // StartLevel(); <---- убрали и стало отлично работать
-
-            // без UI мы хотим запустить новый уровень
-            // надо: отписаться от старых событий
         }
 
 
         private IEnumerator FailWithdelay()
         {
             yield return ClearDelay();
-
-            //  StartLevel();  <---- убрали и стало отлично работать
         }
         //-----------------------------------------------------------------------------------------------------------
 

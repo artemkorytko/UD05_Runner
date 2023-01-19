@@ -231,7 +231,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ee8c54573d4e4cc7b609fe4a6fff0eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _coinsOfLevelConfigfile: {fileID: 11400000, guid: 3e2ac077987c947fa9e17fa4721b4bd2, type: 2}
+  container: {fileID: 11400000, guid: 1943b145204504cfdbad3372d52b9a78, type: 2}
 --- !u!4 &469786842
 Transform:
   m_ObjectHideFlags: 0
@@ -474,6 +474,10 @@ PrefabInstance:
       propertyPath: delay
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 1788939143551503657, guid: b5f8776e707d44c67a98da134fe40e1c, type: 3}
+      propertyPath: container
+      value: 
+      objectReference: {fileID: 11400000, guid: 1943b145204504cfdbad3372d52b9a78, type: 2}
     - target: {fileID: 1788939143551503662, guid: b5f8776e707d44c67a98da134fe40e1c, type: 3}
       propertyPath: m_RootOrder
       value: 2

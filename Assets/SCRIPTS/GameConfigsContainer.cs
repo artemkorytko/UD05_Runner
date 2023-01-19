@@ -1,3 +1,5 @@
+using System;
+using System.Data.Common;
 using UnityEngine;
 
 //------------------- КОНТЕЙНЕР КОНФИГОВ ---------------------------
@@ -8,19 +10,72 @@ namespace Runner
     [CreateAssetMenu(fileName = "GameConfigsContainer", menuName = "Configs/GameConfigsContainer", order = 0)]
     public class GameConfigsContainer : ScriptableObject
     {
-        [SerializeField] private CoinsOfLevelConfig[] coinsOfLevelConfig;
+        [SerializeField] public CoinsOfLevelConfig[] configsarray;
 
-        private CoinsOfLevelConfig _thislevelcoins;
+        [HideInInspector] public int howmanyLevelConfigs; 
+            
         
-        // возвращает конфиг левела
-        public CoinsOfLevelConfig GetCoinsOfLevelConfig()// (ConfigType type)
+        private GameManager _gameManagerfile;
+        private int _gotleveltype;
+
+        private CoinsOfLevelConfig _levelchosen;
+        
+
+        private void Awake()
         {
-            // по какой-то логике ретурнаем тимп конфига
-            _thislevelcoins =  coinsOfLevelConfig[0];
-            return _thislevelcoins;
+            
+            //_gotleveltype = _gameManagerfile.leveltype;
+            howmanyLevelConfigs  = configsarray.Length;
         }
 
 
+        //----------- пытаюсь что-то добавить
+        //----------- на входе прикрутим в GameManager счетчик сколько пробежал без ошибки ------
+        public CoinsOfLevelConfig ChooseLevel()
+        {
+            _gameManagerfile = FindObjectOfType<GameManager>();
+            _gotleveltype = _gameManagerfile.leveltype;
+
+            // меняет уровень в зависимости от типа уровня из GameManager
+            // то бишь сколько раз без ошибок пробежал
+            switch (_gotleveltype)
+            {
+                case 2:  return GetLevel2Coins();
+                    break;
+                
+                case 1: return GetLevel1Coins();
+                    break;
+                
+                default: return GetLevel0Coins();
+                    break;
+            }
+
+            
+        }
+        //-------------------------------
+        
+        // возвращает конфиг левела
+        public CoinsOfLevelConfig GetLevel0Coins()// (ConfigType type)
+        {
+            // по какой-то логике ретурнаем тимп конфига
+            _levelchosen =  configsarray[0];
+            return _levelchosen;
+        }
+
+        public CoinsOfLevelConfig GetLevel1Coins()// (ConfigType type)
+        {
+            // по какой-то логике ретурнаем тимп конфига
+            _levelchosen =  configsarray[1];
+            return _levelchosen;
+        }
+        
+        public CoinsOfLevelConfig GetLevel2Coins()// (ConfigType type)
+        {
+            // по какой-то логике ретурнаем тимп конфига
+            _levelchosen =  configsarray[2];
+            return _levelchosen;
+        }
+        // тут некрасиво, что пока три левела, а потом чего?????????????
     }
 
     // типо список названий

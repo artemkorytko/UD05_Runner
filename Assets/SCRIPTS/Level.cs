@@ -216,7 +216,7 @@ namespace Runner
                 localPosition.z = currentLength; // -1, 0, 14.3
 
                 // создаем стену
-                Instantiate(wallPrefab, localPosition, Quaternion.identity, transform);
+                /////////// !!!!!!!!!!!! Instantiate(wallPrefab, localPosition, Quaternion.identity, transform);
                 // wallPrefab - какой префаб - его назначили ручками
                 // transform - назначаем ему родителя 
                 // roadLocalPosition - ставим его в это локальное место 
