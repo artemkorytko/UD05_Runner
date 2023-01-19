@@ -123,6 +123,17 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!114 &55692873 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2625237299635887302, guid: 111811ad83be241df84071b7a182d2a5, type: 3}
+  m_PrefabInstance: {fileID: 1864395364}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 807eb6f450c6d4e7cb4eee12b0b3f6ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &138928580
 GameObject:
   m_ObjectHideFlags: 0
@@ -220,14 +231,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ee8c54573d4e4cc7b609fe4a6fff0eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  giveRndCoin: {fileID: 0}
-  cointypesarray:
-  - coinWeight: 80
-    coinprefab: {fileID: 3523657357508884951, guid: a22ca25402e354f66899fe6cc8c6ffd4, type: 3}
-  - coinWeight: 40
-    coinprefab: {fileID: 3523657357508884951, guid: 1035fd0e79cb54694a4e6d849a762480, type: 3}
-  - coinWeight: 20
-    coinprefab: {fileID: 3523657357508884951, guid: 6cc62dc1b2cac4168b0060dae6ab7341, type: 3}
+  _coinsOfLevelConfigfile: {fileID: 11400000, guid: 3e2ac077987c947fa9e17fa4721b4bd2, type: 2}
 --- !u!4 &469786842
 Transform:
   m_ObjectHideFlags: 0
@@ -445,6 +449,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4601649140245554642, guid: 111811ad83be241df84071b7a182d2a5, type: 3}
+      propertyPath: _gamepanel
+      value: 
+      objectReference: {fileID: 55692873}
     - target: {fileID: 4601649140245554643, guid: 111811ad83be241df84071b7a182d2a5, type: 3}
       propertyPath: m_Name
       value: UI

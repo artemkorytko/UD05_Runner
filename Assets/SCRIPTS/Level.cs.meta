@@ -3,7 +3,12 @@ guid: 839601c840b3b4ea49ab0d993a6bd5f5
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - roadPartPrefab: {fileID: 5965945503230556363, guid: 069282ca553aa47bcba149c57a1177da, type: 3}
+  - playerPrefab: {fileID: 5220350829825553195, guid: fe782989bb324490184373924b9fef1d, type: 3}
+  - finishPrefab: {fileID: 5965945503230556363, guid: cab56a50b95bb474eb8e21308f482422, type: 3}
+  - wallPrefab: {fileID: 3523657357508884951, guid: 081813220f838430bac1c63e24506097, type: 3}
+  - winparticles: {fileID: 3823750994397710890, guid: 7104e2f2864de4a6281227189517f730, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

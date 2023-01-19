@@ -2,7 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using TMPro;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -17,7 +19,7 @@ namespace Runner
         [SerializeField] private GameObject finishPrefab; // финишный кусок дороги
         [SerializeField] private GameObject wallPrefab; // стенка
         [SerializeField] private GameObject winparticles;
-        [SerializeField] private GameObject coinPrefab;
+        //[SerializeField] private GameObject coinPrefab;
 
         // для расстановки стенок: между ними будет рандомиться расстановка стенок по ширине
         [SerializeField] private float minWallOffset = 3f;
@@ -50,6 +52,8 @@ namespace Runner
 
         // ПОДКЛЮЧАЮ РАНДОМ МОНЕТОК
         private RandomCoins _randomCoinsFile;
+
+        //private CoinsOfLevelConfig _coinsOfLevelConfigfile;
         // public event Action GenerateRandomCoin; 
 
         //----------------переменные для стен и монеток---------------------
@@ -155,8 +159,9 @@ namespace Runner
         private void GenerateWallsCoins()
         {
             //подключились к файлу рандома монет
-            _randomCoinsFile = FindObjectOfType<RandomCoins>();
+            //_randomCoinsFile = FindObjectOfType<RandomCoins>();
             
+            string cointext = null;
             
             // ---- расчёты----------надо высчитать всю длину трассы от начала до финиша
             fulllength = roadPartCount * roadPartLength; // 10 частей * 5 = 50
@@ -241,63 +246,35 @@ namespace Runner
                 
                 // ставим монетки
                 // получаем рандомный префаб монетки
-                //++++++++++++++++NEW: РАНДОМ С ВЕСАМИ ++++++++++++++++++++++++++++++++++++++
+                //++++++++++++++++ NEW: РАНДОМ С ВЕСАМИ ++++++++++++++++++++++++++++++++++++++
                 //----------- АЛЛАХ ЗНАЕТ, КАК ЭТО РАБОТАЕТ ---------------------------------
-                GameObject a = _randomCoinsFile.GoGenerateCoin();
-                Instantiate(a, localCoinPosition, Quaternion.identity, transform);
-                //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                // работaло: GameObject a = 6.GoGenerateCoin();
+                // var cl = _randomCoinsFile.GoGenerateCoin();
+                
+                
+                
+                
+                 _randomCoinsFile = FindObjectOfType<RandomCoins>();
+                
+                 CoinConfig cl = _randomCoinsFile.GetOneCoin();
+                 GameObject a = cl.CoinPrefab; // префаб взятый из полученного экземпляра класса
+                
+                 cointext = cl.PointNumber.ToString();
+                 GameObject thiscoin = Instantiate(a, localCoinPosition, Quaternion.identity, transform);
+                
+                 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                 //  // надпись на монетке:
+                 //
+                 // как мне обратиться к свойству переданной сюда монетки, (вывести текст, например)?
+                 var wheretotext = thiscoin.GetComponentInChildren<TextMeshProUGUI>();
+                 wheretotext.text = cointext;
+                
+                
+
             }
         }
 
-        //------------------ МОНЕТКИ ----------------------------------------------------------------------------------
-
-/*
-        private void GenerateCoins()
-        {
-            fulllength = roadPartCount * roadPartLength; // 10 частей * 5 = 50
-            currentLength = roadPartLength * 2f; // (или просто 2) стартуем с позиции 10
-            //wallOffsetX = roadPartWigth * 0.33333f; // 2 
-            //startPosX = -roadPartWigth * 0.5f; // -3
-
-            // clear coins Dict
-            // coinDict.Clear();
-
-            int counter = 1;
-            // скопировала со cтен
-            while (currentLength < fulllength) // while < 50 --- и минус пять в конце
-            {
-                // //----------------------- длина -------------------------------------
-                // var zOffset = minWallOffset + Random.Range(minWallOffset, maxWallOffset);
-                // currentLength += zOffset;
-                // currentLength = Mathf.Clamp(currentLength, 0, fulllength);
-                //
-                // //-------------------------- ширина ----------------------------------
-                //var rndPositionX = Random.Range(0, 3);
-                //var wallPositionX = startPosX;
-                // var localPosition = Vector3.zero; //  новая позиция 0,0,0
-                // localPosition.x = wallPositionX; // -1, 0, 0
-                // localPosition.z = currentLength; // -1, 0, 14.3
-
-                var zOffset = minWallOffset + Random.Range(minWallOffset, maxWallOffset);
-                currentLength += zOffset; // += прибавить к себе же // 10 + 4.3f = 14.3 по Z !
-                // длину надо заклепить. Clamp - ограничить в доапазоне (входной параметр/кого держим, от, до)
-                // чтобы она не вышла после добавлений за пределы максимальной длины
-                currentLength = Mathf.Clamp(currentLength, 0, fulllength); // not > 50
-
-                var localPosition = Vector3.zero; //  новая позиция 0,0,0
-                localPosition.x = 0; // -1, 0, 0
-                localPosition.z = currentLength; // localPosition.z + counter * 2; // -1, 0, 14.3
-
-
-                // создаем в рядок
-                GameObject thisCoin = Instantiate(coinPrefab, localPosition, Quaternion.identity, transform);
-
-
-                counter++;
-            }
-           
-        }
- */
+        
 
         //------------------------------------ салют на финише ----------------------------------------------------
         private void WinSalute()

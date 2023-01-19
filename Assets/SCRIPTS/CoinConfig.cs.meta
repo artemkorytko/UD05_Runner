@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 8eebde073ac164df5be34869c8dde82b
+guid: b4aa18719d9b46c18e3171bd23d1f759
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
   defaultReferences:
-  - model: {fileID: 5220350829825553197, guid: fe782989bb324490184373924b9fef1d, type: 3}
+  - coinprefab: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

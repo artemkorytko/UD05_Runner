@@ -9,4 +9,6 @@ namespace Runner
     {
         [SerializeField] private GamePanel _gamepanel;
     }
+    
+    
 }
