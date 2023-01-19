@@ -28,6 +28,9 @@ namespace Runner
             GenerateRoad();
             GeneratePlayer();
             GenerateWalls();
+
+            // var cl = FindObjectOfType<GameManager>().GetSumOfTwoDigit(5, 15);
+            // Debug.Log(cl.MyInt); 
         }
 
         private void Clear()
