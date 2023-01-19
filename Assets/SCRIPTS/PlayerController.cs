@@ -11,13 +11,20 @@ namespace Runner
 {
     public class PlayerController : MonoBehaviour
     {
-        [SerializeField] private float forwardspeed = 5f; // скорость для Move
+        private float forwardspeed;
+        // было до конфига:
+        //[SerializeField] private float forwardspeed = 5f; // скорость для Move
+        
         [SerializeField] private float sidespeed = 10f;
         [SerializeField] private float roadWidth = 5f;
         [SerializeField] private float turnRotationAngle = 30f; // на сколько разрешаем повернуться
         [SerializeField] private float lerpSpeed = 5f; //для плавности поворота что ли??? 
         [SerializeField] private Transform model; //ссылка на модель, которую поворачиваем, задать руками !!!! :/
         //[SerializeField] private GameObject birdsparticle; 
+
+        // для получения скорости из конфига
+        private GameManager _gameManagerFile;
+        private int _getSpeed;
 
         private Rigidbody _rigidbody; // ссылка на ригибоди ДЛЯ ДВИЖЕНИЯ!
         private Animator _animator; // дочерний от вьюшки
@@ -76,8 +83,19 @@ namespace Runner
             _inputHandler = GetComponent<InputHandler>();
             _rigidbody = GetComponent<Rigidbody>();
             _birdparticles = GetComponentInChildren<ParticleSystem>();
+            
+            //??????????????? как получить без навешивания конфигконтейнера на плеера????????????????????
+            _gameManagerFile = FindObjectOfType<GameManager>();
+            //forwardspeed = GameConfigsContainer.LevelSpeed;
+            //???????????????????????????????????????????????????????????????????????????????????????????
         }
 
+        private void Start()
+        {
+            //------ AAAAAA БЛИИИИНННН КОНФИГИ ЭТИ --------------------------------------
+            _getSpeed = _gameManagerFile.leveltype;
+            forwardspeed = _gameManagerFile.container.configsarray[_getSpeed].thisLevelSpeed; 
+        }
 
         // ----------- чтобы двигаться --------------------------------------------------------------------------
         private void FixedUpdate() // не зависит от частоты кадров, вызывается до update. Начнет бежать тут.

@@ -9,9 +9,9 @@ namespace Runner
     public class CoinsOfLevelConfig : ScriptableObject
     {
         [SerializeField] private CoinConfig[] itemshere;
+        [SerializeField] public int thisLevelSpeed;
 
-
-        //------ получить одну монетку ------------------------
+            //------ получить одну монетку ------------------------
         public CoinConfig GoGetCoin()
         {
             CoinConfig thiscoin = ScriptableObject.CreateInstance<CoinConfig>();

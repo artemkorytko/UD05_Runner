@@ -11,7 +11,7 @@ namespace Runner
         [SerializeField] private Level levelPrefab;
 
         // считает сколько типов уровня в awake
-        [SerializeField] private GameConfigsContainer container;
+        [SerializeField] public GameConfigsContainer container;
         private int howmanylevels;
         public int leveltype = 0;
 

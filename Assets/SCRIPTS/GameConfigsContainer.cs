@@ -12,20 +12,19 @@ namespace Runner
     {
         [SerializeField] public CoinsOfLevelConfig[] configsarray;
 
-        [HideInInspector] public int howmanyLevelConfigs; 
-            
-        
+        [HideInInspector] public int howmanyLevelConfigs;
+
+
         private GameManager _gameManagerfile;
         private int _gotleveltype;
 
         private CoinsOfLevelConfig _levelchosen;
-        
+
 
         private void Awake()
         {
-            
             //_gotleveltype = _gameManagerfile.leveltype;
-            howmanyLevelConfigs  = configsarray.Length;
+            howmanyLevelConfigs = configsarray.Length;
         }
 
 
@@ -40,39 +39,36 @@ namespace Runner
             // то бишь сколько раз без ошибок пробежал
             switch (_gotleveltype)
             {
-                case 2:  return GetLevel2Coins();
-                    break;
-                
-                case 1: return GetLevel1Coins();
-                    break;
-                
-                default: return GetLevel0Coins();
-                    break;
-            }
+                case 2: return GetLevel2Coins(); // брейки не надо ибо есть ретурн
 
-            
+
+                case 1: return GetLevel1Coins();
+
+
+                default: return GetLevel0Coins();
+            }
         }
         //-------------------------------
-        
-        // возвращает конфиг левела
-        public CoinsOfLevelConfig GetLevel0Coins()// (ConfigType type)
+
+        // возвращает конфиг левела кудааа - в гейм менеджер
+        public CoinsOfLevelConfig GetLevel0Coins() // (ConfigType type)
         {
             // по какой-то логике ретурнаем тимп конфига
-            _levelchosen =  configsarray[0];
+            _levelchosen = configsarray[0];
             return _levelchosen;
         }
 
-        public CoinsOfLevelConfig GetLevel1Coins()// (ConfigType type)
+        public CoinsOfLevelConfig GetLevel1Coins() // (ConfigType type)
         {
             // по какой-то логике ретурнаем тимп конфига
-            _levelchosen =  configsarray[1];
+            _levelchosen = configsarray[1];
             return _levelchosen;
         }
-        
-        public CoinsOfLevelConfig GetLevel2Coins()// (ConfigType type)
+
+        public CoinsOfLevelConfig GetLevel2Coins() // (ConfigType type)
         {
             // по какой-то логике ретурнаем тимп конфига
-            _levelchosen =  configsarray[2];
+            _levelchosen = configsarray[2];
             return _levelchosen;
         }
         // тут некрасиво, что пока три левела, а потом чего?????????????
@@ -86,5 +82,4 @@ namespace Runner
         Hard,
         Insane
     }
-
 }
