@@ -278,7 +278,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8381ee13cc14d433084afb54e74e8cc0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  coinrotSpeed: 1
+  _thiscoinconfig: {fileID: 11400000, guid: 15739b33cdb2249d49c1ab64feb16b7f, type: 2}
+  thisCoinPrice: 0
 --- !u!1 &7573075850155285645
 GameObject:
   m_ObjectHideFlags: 0

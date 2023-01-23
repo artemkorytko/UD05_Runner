@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemshere:
   - {fileID: 11400000, guid: 7c22a7a2984564c65b79087c0d37ae6e, type: 2}
+  thisLevelSpeed: 7

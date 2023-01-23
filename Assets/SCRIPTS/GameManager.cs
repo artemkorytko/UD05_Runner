@@ -22,7 +22,8 @@ namespace Runner
         private PlayerController _playercontrollerfile;
 
         public int howMuchCoins = 0; //считаем монетки ЗА ВСЮ ИГРУ
-
+        
+        
 
         public event Action LevelChanged; //событие для передачи на панель
         public event Action CoinsEncreqased; //событие для передачи на панель

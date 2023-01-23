@@ -26,6 +26,8 @@ namespace Runner
         private GameManager _gameManagerFile;
         private int _getSpeed;
 
+        private CoinConfig _coinConfigFile;
+
         private Rigidbody _rigidbody; // ссылка на ригибоди ДЛЯ ДВИЖЕНИЯ!
         private Animator _animator; // дочерний от вьюшки
         private InputHandler _inputHandler; // берет позицию из инпута
@@ -47,7 +49,11 @@ namespace Runner
 
         // ыыыы
         public event Action<CoinComponent> GetCoin;
+        public event Action<int> GetMoney; 
 
+        // типо переменная чтобы получать сколько заработали с одной монетки денежек
+        public int priceToAdd;
+        
 
         // чтобы понимать, что этот флаг меняется - нужен геттер и сеттер :/ - это я вообще хреново понимаю
         public bool IsActive
@@ -84,15 +90,14 @@ namespace Runner
             _rigidbody = GetComponent<Rigidbody>();
             _birdparticles = GetComponentInChildren<ParticleSystem>();
             
-            //??????????????? как получить без навешивания конфигконтейнера на плеера????????????????????
+            // нужно получить без навешивания конфигконтейнера, в start
             _gameManagerFile = FindObjectOfType<GameManager>();
-            //forwardspeed = GameConfigsContainer.LevelSpeed;
-            //???????????????????????????????????????????????????????????????????????????????????????????
+            priceToAdd = 0;
         }
 
         private void Start()
         {
-            //------ AAAAAA БЛИИИИНННН КОНФИГИ ЭТИ --------------------------------------
+            //------ AAAAAA работает! ---- ???? это нормально вообще ????? --------------------------------------
             _getSpeed = _gameManagerFile.leveltype;
             forwardspeed = _gameManagerFile.container.configsarray[_getSpeed].thisLevelSpeed; 
         }
@@ -158,34 +163,15 @@ namespace Runner
         // ------- для триггера (не пнет чела, но сработает) --- надо шоб был ригибади
         private void OnTriggerEnter(Collider other) // че за other?
         {
-            Debug.Log("TRIGGER KOZEL: " + other.gameObject.name);
+            //Debug.Log("TRIGGER KOZEL: " + other.gameObject.name);
 
-            // if (other.gameObject.GetComponent<CoinComponent>())
-
-            //NEW
-            /*
-            Debug.Log("Parent: " + other.transform.parent.name);
-            Debug.Log("Root: " + other.transform.root.name);
-            */
-                
-            if (other.transform.parent.TryGetComponent(out CoinComponent coin))
+            if (other.transform.parent.TryGetComponent(out CoinComponent coin)) //кажысь отсюда идет в CoinComponent
             {
                 //Debug.Log("TryGetComponent: " + coin.name);
                 GotaCoin(coin);
             }
 
-
-            //работало
-            // if (other.gameObject.name == "Cylinder")
-            // {
-            //     // ##################################### пыталась узнать имя парента (монета>цилиндр) :/ 
-            //     //string st = other.GetComponentInParent<GameObject>().name;
-            //     //Debug.Log(st);
-            //     
-            //     GotaCoin();
-            // }
-
-
+            
             if (other.gameObject.GetComponent<FinishComponent>())
             {
                 Finish();
@@ -239,9 +225,31 @@ namespace Runner
             Dobezal?.Invoke();
         }
 
+        //------- NEW тэээк мы тут передаём int - который есть поле внутри конфига, приделанного к данному
+        // геймобджекту
+        
+        // private int GotaCoin(CoinComponent coin)
+        // {
+        //     CoinConfig whichcoincollected = ScriptableObject.CreateInstance<CoinConfig>();
+        //     GetCoin?.Invoke(coin);
+        //     Debug.Log(coin.gameObject.name);
+        //     thisCoinPrice = whichcoincollected.PointNumber;
+        //     return thisCoinPrice;
+        // }
+        
+        // было до конфигов:
+        // private void GotaCoin(CoinComponent coin)
+        // {
+        //     GetCoin?.Invoke(coin);
+        //     
+        // }
+        
+        
         private void GotaCoin(CoinComponent coin)
         {
             GetCoin?.Invoke(coin);
+            // priceToAdd += coin.thisCoinPrice; // оно же + coin.thisCoinPrice
+            GetMoney?.Invoke(coin.thisCoinPrice);
         }
     }
 }

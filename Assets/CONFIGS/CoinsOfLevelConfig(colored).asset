@@ -17,3 +17,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 7c22a7a2984564c65b79087c0d37ae6e, type: 2}
   - {fileID: 11400000, guid: 15739b33cdb2249d49c1ab64feb16b7f, type: 2}
   - {fileID: 11400000, guid: 461fb0ff2197842d9b8532ec593cbd16, type: 2}
+  thisLevelSpeed: 5

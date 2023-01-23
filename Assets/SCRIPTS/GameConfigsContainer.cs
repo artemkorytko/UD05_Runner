@@ -11,10 +11,14 @@ namespace Runner
     public class GameConfigsContainer : ScriptableObject
     {
         [SerializeField] public CoinsOfLevelConfig[] configsarray;
-
+        
         [HideInInspector] public int howmanyLevelConfigs;
+        
+        //-------общие настраиваемые переменные -----------------
+        [SerializeField] public float coinrotSpeed = 1f;
 
-
+        
+        //----------------------------------
         private GameManager _gameManagerfile;
         private int _gotleveltype;
 

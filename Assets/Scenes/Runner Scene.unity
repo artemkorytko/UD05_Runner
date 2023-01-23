@@ -123,17 +123,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!114 &55692873 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2625237299635887302, guid: 111811ad83be241df84071b7a182d2a5, type: 3}
-  m_PrefabInstance: {fileID: 1864395364}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 807eb6f450c6d4e7cb4eee12b0b3f6ea, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &138928580
 GameObject:
   m_ObjectHideFlags: 0
@@ -296,6 +285,25 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!1 &980427373 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1788939143551503656, guid: b5f8776e707d44c67a98da134fe40e1c, type: 3}
+  m_PrefabInstance: {fileID: 2137905569}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &980427376
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 980427373}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b799ff5585944467b9dd7deeb33be1d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  countmoney: 0
+  record: 0
 --- !u!1001 &1712259652
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -404,10 +412,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4601649140245554642, guid: 111811ad83be241df84071b7a182d2a5, type: 3}
-      propertyPath: _gamepanel
-      value: 
-      objectReference: {fileID: 55692873}
     - target: {fileID: 4601649140245554643, guid: 111811ad83be241df84071b7a182d2a5, type: 3}
       propertyPath: m_Name
       value: UI
