@@ -32,22 +32,24 @@ namespace Runner
         private void Awake()
         {
             _gamemanagerfile = FindObjectOfType<GameManager>();
-            
-            // ??тут надо?
             _moneycounterfile = FindObjectOfType<MoneyCounter>();
+
             _gamemanagerfile.LevelChanged += PrintLevelText;
             _gamemanagerfile.CoinsEncreqased += PrintCoinsCount;
-
-            //_playerfile = FindObjectOfType<PlayerController>();
+            
+            _moneycounterfile.NewRecordMade += ShowNewRecord;
             _moneysum = 0;
         }
 
 
         private void Start()
         {
-            moneydonetext.text = "Money done: - ";
+             moneydonetext.text = "Money done: - ";
             _gamemanagerfile = FindObjectOfType<GameManager>();
             _moneycounterfile = FindObjectOfType<MoneyCounter>();
+            
+            // NEW - всегда выводит рекорд в начале игры
+            recordtext.text = $"Top record: ${_moneycounterfile.record}";
         }
 
 
@@ -60,39 +62,43 @@ namespace Runner
             leveltext.text = $"Number of try: {whattoprintIntoLevel} ";
             
             //--------- выводит тип (номер) уровня -----------------------------
-              
             leveltypetext.text = $"Level {(_gamemanagerfile.leveltype + 1).ToString()}";
-
             
-            recordtext.text = $"Record: {_moneycounterfile.record} $";
+            recordtext.text = $"Top record: ${_moneycounterfile.record}";
+            
+            // new - шоб после упс при перезапуске уровня были нолики
+            PrintCoinsCount();
         }
 
         public void PrintCoinsCount()
         {
             _coinsfromgamamanager = _gamemanagerfile.howMuchCoins;
             coinstext.text = $"Coins collected: {_coinsfromgamamanager.ToString()}";
-
-            //----------- ОШИБКА гдето осталась но хоть работает  -----------------------------------------------------
-            //----------- сюда передавать сумму денег, или тут суммировать -----------------
-            // ????????????????? ПОЛУЧАЕТСЯ В случае, где нам нужно "текущее состояние переменной в файле" - 
-            // подключсаем его не в awake a в нужном месте функции??????
-            //_playerfile = FindObjectOfType<PlayerController>();
-            // или тут??
-            //_moneycounterfile = FindObjectOfType<MoneyCounter>();
+            
             _moneysum = _moneycounterfile.countmoney;
-            //_moneysum = _playerfile.priceToAdd;
-            moneydonetext.text = $"Money done: {_moneysum.ToString()} $";
-            
-            moneydonetext.text = $"Money done {_moneycounterfile.countmoney.ToString()} $";
-            
+            moneydonetext.text = $"Money done: ${_moneysum.ToString()}";
         }
 
-        
+        private void ShowNewRecord() // вызывается когда добежали и поставили рекорд
+        {
+            recordtext.text = $"Top record: ${_moneycounterfile.record}";
+        }
+
+        public void OopsifDie()
+        {
+            // Debug.Log("Панель знает что треснулся");
+            moneydonetext.text = " Oooops! ";
+            coinstext.text = " Oooops! ";
+        }
 
         private void OnDestroy()
         {
             _gamemanagerfile.LevelChanged -= PrintLevelText;
             _gamemanagerfile.CoinsEncreqased -= PrintCoinsCount;
+            
+            _moneycounterfile.NewRecordMade -= ShowNewRecord;
+            
+            _playerfile.OnDie -= OopsifDie;
         }
     }
 }

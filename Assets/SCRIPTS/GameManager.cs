@@ -21,6 +21,8 @@ namespace Runner
         private Level _level;
         private PlayerController _playercontrollerfile;
 
+        private MoneyCounter _moneyCounterFile;
+
         public int howMuchCoins = 0; //считаем монетки ЗА ВСЮ ИГРУ
         
         
@@ -75,6 +77,9 @@ namespace Runner
             audioManager.InitSound();
 
             LevelChanged?.Invoke();
+
+            _moneyCounterFile = FindObjectOfType<MoneyCounter>();
+            _moneyCounterFile.InitMoneyCounter();
         }
 
         //------------ методы по событиям --------------------------------------------------------------------------
@@ -85,6 +90,7 @@ namespace Runner
 
             // добвалено !
             leveltype = 0;
+            howMuchCoins = 0;
         }
 
 
@@ -94,7 +100,7 @@ namespace Runner
             StartCoroutine(WinWithdelay());
 
             //--- добвалено с конфигами ------------------------------------------------
-            // если он подряд два выграл - то играет последний уровень, пока не врежется
+            // если он подряд два выграл - то играет последний уровень с золотыми монетами, пока не врежется
             //--------------------------------------------------------------------------
             if (leveltype < howmanylevels - 1) // -1 ибо считает штуки конфигов в массиве
             {
@@ -108,8 +114,7 @@ namespace Runner
         {
             yield return ClearDelay();
         }
-
-
+        
         private IEnumerator FailWithdelay()
         {
             yield return ClearDelay();

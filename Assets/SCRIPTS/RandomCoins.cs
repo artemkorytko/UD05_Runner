@@ -6,10 +6,9 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 
 
-//--------------- теперь это скорее рандом левелс -------------
+//--------------- висит на пустом объекте, даем ему ссылку на контейнер конфигов -------------
 namespace Runner
 {
-    // допустим, три монетки с весами 10, 40, 80
     public class RandomCoins : MonoBehaviour
     {
          private CoinConfig _thiscoin;
@@ -17,32 +16,16 @@ namespace Runner
         [SerializeField] private GameConfigsContainer container;
         
         
-        //----- работало: поля для конфига-------------------------------------
-        //
-        // [SerializeField] private CoinsOfLevelConfig _coinsOfLevelConfigfile;
+        //----- в эту функцию лазит Level, когда ставит монетки ----------------------------------------
         public CoinConfig GetOneCoin()
         { 
             // ёёёёёёё мое оно прикрепилось друг за другом!!!
             _thiscoin = container.ChooseLevel().GoGetCoin();
             return _thiscoin;
+            // идет в контейнер конфигоа, там выбирает левел относительно того, что в GameManagere за тип уровня, 
+            // и в нем уже выбирает мометку согласно добавленным в конфиг
         }
-        //----------------------------------------------------------------------
-    }
-
-    
-    //---------- это вроде не используется более? ---------
-    [Serializable]
-    public class RandomCoinsClass
-    {
-        //public Class RandomCoin;
-    
-        [SerializeField] private int coinWeight;
-        [SerializeField] private GameObject coinprefab;
-        [SerializeField] private int pointnumber;
-    
-        public int CoinWeight => coinWeight;
-        public GameObject CoinPrefab => coinprefab;
-        public int PointNumber => pointnumber;
+        //------------------------------------------------------------------------------------------------
     }
     
 }

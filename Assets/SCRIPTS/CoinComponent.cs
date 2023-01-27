@@ -21,7 +21,6 @@ namespace Runner
         {
             _playercontrollerfile = FindObjectOfType<PlayerController>();
             _gameManager = FindObjectOfType<GameManager>();
-            
         }
 
         private void Start()
@@ -29,8 +28,7 @@ namespace Runner
             gameObject.SetActive(true); // [ Я тут точно обращаюсь к самой монетке? ]
             _playercontrollerfile.GetCoin += DeleteCoin;
             
-            //???????????? получается к конфигу мы не можем обращаться напрямую,
-            // а только через объект, на котором висит контейнер конфигов?
+            // к конфигу обращаемся через объект, на котором висит контейнер конфигов?
             _coinrotSpeed = _gameManager.container.coinrotSpeed;
             
             // NEW
@@ -42,6 +40,7 @@ namespace Runner
 
         private void Update()
         {
+            // монетка крутится
             transform.rotation = transform.rotation * Quaternion.Euler(0, _coinrotSpeed, 0);
         }
 
@@ -49,12 +48,9 @@ namespace Runner
         {
             if (coin == this)
             {
-
                 //было и работает:
                 gameObject.SetActive(false);
-                
             }
-            
             //Destroy(transform.GetChild(i).GameObject()); - попробовать что ли
         }
 

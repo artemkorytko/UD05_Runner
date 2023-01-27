@@ -1,6 +1,6 @@
 using UnityEngine;
 
-//=========== этот типо содержит массив с ссылками на маленькие конфиги и метод рандома ://// ==========
+//=========== этот содержит массив с ссылками на маленькие конфиги монеток и метод их рандома ===============
 
 namespace Runner
 {
@@ -11,7 +11,7 @@ namespace Runner
         [SerializeField] private CoinConfig[] itemshere;
         [SerializeField] public int thisLevelSpeed;
 
-            //------ получить одну монетку ------------------------
+            //------ получить одну монетку ----------------------------------------------------
         public CoinConfig GoGetCoin()
         {
             CoinConfig thiscoin = ScriptableObject.CreateInstance<CoinConfig>();
@@ -19,18 +19,18 @@ namespace Runner
         }
 
         
-        //------ public GameItemConfig GetCoin()
-         CoinConfig GetCoin()
+           //--------------- рандом монеток с весами --------------------------------------------
+        private CoinConfig GetCoin()
         {
             
-            // первый прогон массива для получения суммы весов
+            //--------- первый прогон массива для получения суммы весов ---------
             int total = 0;
             foreach (var item in itemshere)
             {
                 total += item.CoinWeight; // 10, 40, 80
             } // по итогу 130
             
-            // второй прогон массива с рандомом и сравнением 
+            //---------  второй прогон массива с рандомом и сравнением ---------
             var rnd = Random.Range(0, total); // дает число от 0 до 130
             var current = 0;
             foreach (var item in itemshere) //для каждого типа монетки

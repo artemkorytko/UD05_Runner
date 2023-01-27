@@ -65,22 +65,31 @@ namespace Runner
 
         //=============================================================================================================
         
-
+        private void Awake()
+        {
+            // для получения типа уровня 
+            _gamemanagerfile = FindObjectOfType<GameManager>();
+        }
 
         public void GenerateLevel()
         {
             // очистить старый уровень перед тем как генерить новый
             Clear();
-
-            currentlevel++;
-
+            
+            // NEW мы теперь считаем попытки пробежать без ошибки несколько уровней подряд
+            // а увеличение типа уровня не считаем за новую попытку
+            if (_gamemanagerfile.leveltype == 0)
+            { 
+                currentlevel++;
+            }
+            
             // уровень состоит из фаз:
             GenerateRoad();
             GeneratePlayer();
             GenerateWallsCoins();
         }
 
-        //-------------------------------------- дестрой всего --------------------------------------------------------
+        //-------------------------------------- дестрой всего что в левеле --------------------------------------------
         private void Clear()
         {
             // надо перебрать все дочерние компонеты и задестроить
@@ -204,7 +213,6 @@ namespace Runner
                 var localPosition = Vector3.zero; //  новая позиция 0,0,0
                 localPosition.x = wallPositionX; // -1, 0, 0
                 localPosition.z = currentLength; // -1, 0, 14.3
-
                 
                 
                 // **************************** отключить стены для дебага *******************************************
@@ -237,13 +245,11 @@ namespace Runner
                 localCoinPosition.x = coinPositionX;
                 localCoinPosition.z = currentLength;
                 
-                // ставим монетки
-                // получаем рандомный префаб монетки
+                // ставим монетки: получаем рандомный префаб монетки
                 //++++++++++++++++ NEW: РАНДОМ С ВЕСАМИ ++++++++++++++++++++++++++++++++++++++
                 //----------- АЛЛАХ ЗНАЕТ, КАК ЭТО РАБОТАЕТ ---------------------------------
-                // работaло: GameObject a = 6.GoGenerateCoin();
+                // работaло ранее: GameObject a = 6.GoGenerateCoin();
                 // var cl = _randomCoinsFile.GoGenerateCoin();
-                
                 
                  _randomCoinsFile = FindObjectOfType<RandomCoins>();
                 
@@ -253,10 +259,7 @@ namespace Runner
                  cointext = cl.PointNumber.ToString();
                  GameObject thiscoin = Instantiate(a, localCoinPosition, Quaternion.identity, transform);
                 
-                 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-                 //  // надпись на монетке:
-                 //
-                 // как мне обратиться к свойству переданной сюда монетки, (вывести текст, например)?
+                 // ++++++++++++++++++ надпись на монетке +++++++++++++++++++++++++++++++++++++++++++++++++++++++++
                  var wheretotext = thiscoin.GetComponentInChildren<TextMeshProUGUI>();
                  wheretotext.text = cointext;
                 
@@ -267,8 +270,8 @@ namespace Runner
         //------------------------------------ салют на финише -------------------------------------------------------
         private void WinSalute()
         {
-            Debug.Log("Салют пыщ пыщ");
-            _winparticles.Play(); //  РАБОТАЕТ НАКОНЕЦ!
+            // Debug.Log("Салют пыщ пыщ");
+            _winparticles.Play(); 
         }
         
         private void OnDestroy()

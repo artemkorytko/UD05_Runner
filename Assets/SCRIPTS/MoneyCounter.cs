@@ -10,44 +10,52 @@ namespace Runner
         // для сохранения:
         private const string SAVE_KEY = "Record";
 
-        // переменная чтобы считать сколько заработали в сумме денежек
-        public int countmoney  = 0; 
-        private PlayerController _playerContfile;
+        // переменная, чтобы считать сколько заработали в сумме денежек
+        public int countmoney = 0;
+        
+        // переменная для вывода и хранения рекорда
         public int record;
         
+        private PlayerController _playerContfile;
+        
+        public event Action NewRecordMade; //---- идет в геймпанель отображать рекорд сразу, пока чел танцует
 
-        private void Start()
+        private void Awake()
         {
-            // пока не вынесла в старт - не мог найти)))
+            LoadData(); //NEW - при первом запуске идет cxитывает топ рекорд
+        }
+
+        public void InitMoneyCounter()
+        {
             _playerContfile = FindObjectOfType<PlayerController>();
+            
             _playerContfile.GetMoney += AddMoney;
             _playerContfile.Dobezal += SaveData;
             _playerContfile.OnDie += ObnulenujeBabla;
             LoadData();
-            record = 0;
         }
 
         private void AddMoney(int moneycame)
-        {   
-            _playerContfile = FindObjectOfType<PlayerController>();
+        {
             countmoney += moneycame; //игрок взял монетку - увеличили переменную
             
-            // !!!!! ошибка на втором уровне уже не работает !!!!!!
             Debug.Log($"   увеличили сумму - стало {countmoney}");
         }
 
-        
+
         //-------------- сохранение рекорда---------------------------
         private void SaveData()
         {
-            if (countmoney > record ) // если текущее больше рекорда    && countmoney != 0
+            if (countmoney > record) // если текущее больше рекорда    && countmoney != 0
             {
-             PlayerPrefs.SetInt(SAVE_KEY, record);
-             Debug.Log("   record saved");
+                record = countmoney;
+                PlayerPrefs.SetInt(SAVE_KEY, record);
+                Debug.Log("   record saved");
+                NewRecordMade?.Invoke(); //---- идет в геймпанель отображать рекорд сразу пока танцует
             }
             else return;
         }
-        
+
         private void LoadData()
         {
             record = PlayerPrefs.GetInt(SAVE_KEY, 0);
@@ -58,11 +66,15 @@ namespace Runner
         private void ObnulenujeBabla()
         {
             countmoney = 0;
+            
+            // Вот тут надо MoneyDone тоже обнулить
         }
 
         private void OnDestroy()
         {
             _playerContfile.GetMoney -= AddMoney;
+            _playerContfile.Dobezal -= SaveData;
+            _playerContfile.OnDie -= ObnulenujeBabla;
         }
     }
 }

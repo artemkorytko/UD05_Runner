@@ -46,21 +46,19 @@ namespace Runner
 
         // у АК -  public event Action OnWin;
         public event Action OnDie;
-
-        // ыыыы
         public event Action<CoinComponent> GetCoin;
         public event Action<int> GetMoney; 
 
         // типо переменная чтобы получать сколько заработали с одной монетки денежек
-        public int priceToAdd;
-        
+        // public int priceToAdd;
+        private GamePanel _gamePanelFile;
 
         // чтобы понимать, что этот флаг меняется - нужен геттер и сеттер :/ - это я вообще хреново понимаю
         public bool IsActive
         {
-            // гугл: гет получает значение поля класса :/
+            // гугл: гет получает значение поля класса
             // гугл: функция без аргументов, которая сработает при чтении свойства
-            // возвращает нам - куда? почему серенькое????????????
+            // возвращает нам - куда? почему серенькое?????
             get => _isActive;
 
             // делает логику
@@ -76,12 +74,7 @@ namespace Runner
                 }
             }
         }
-
-        // временно закоммитили дабы активировать из другого места !!!!!!!!
-        // private void Start()
-        // {
-        //     IsActive = true; // чтобы сразу включилась анимация бега
-        // }
+        
 
         void Awake()
         {
@@ -92,7 +85,8 @@ namespace Runner
             
             // нужно получить без навешивания конфигконтейнера, в start
             _gameManagerFile = FindObjectOfType<GameManager>();
-            priceToAdd = 0;
+            // priceToAdd = 0;
+            _gamePanelFile = FindObjectOfType<GamePanel>();
         }
 
         private void Start()
@@ -114,7 +108,7 @@ namespace Runner
         void Move()
         {
             // считывает HorizontalAxis в инпут в файле InputHandler!!!
-            // минус перд всем - это то же, что домножить на -1, без этого двигался ЗЕРКАЛЬНО от того, куда свайпаем
+            // минус перед всем - это то же, что домножить на -1, без этого двигался ЗЕРКАЛЬНО от того, куда свайпаем
             var xOffset = -_inputHandler.HorizontalAxis * sidespeed;
 
 
@@ -150,7 +144,7 @@ namespace Runner
             model.localRotation = Quaternion.Euler(rotation);
 
             //-----------------------------бег---------------------------------------------------
-            // позицию куда смещаемся сдвинуть вперед
+            // позицию куда смещаемся - сдвинуть вперед
             // !! обратились к найденному у игрока КОМПОНЕНТУ ригибоди
             // forward - направление
             // вторые скобки шоб плавающая точка не мешала умножать
@@ -163,11 +157,9 @@ namespace Runner
         // ------- для триггера (не пнет чела, но сработает) --- надо шоб был ригибади
         private void OnTriggerEnter(Collider other) // че за other?
         {
-            //Debug.Log("TRIGGER KOZEL: " + other.gameObject.name);
-
-            if (other.transform.parent.TryGetComponent(out CoinComponent coin)) //кажысь отсюда идет в CoinComponent
+            
+            if (other.transform.parent.TryGetComponent(out CoinComponent coin)) // кажысь отсюда идет в CoinComponent
             {
-                //Debug.Log("TryGetComponent: " + coin.name);
                 GotaCoin(coin);
             }
 
@@ -192,19 +184,16 @@ namespace Runner
             {
                 Died();
             }
-
-
+            
             // изначально он ударялся в кубик
             // if (collision.gameObject.GetComponent<WInCubeComponent>())
-            // {
-            //     Finish();
-            // }
+            // { Finish(); }
             //Debug.Log("Collision Enter"); // всего есть три типа, оставаться и выйти из коллизии 
         }
 
 
         //------------------ методы в которых меняется анимация чувачка ------------------
-
+        
         [ContextMenu("Died")] // это вылезет правой кнопкой из скрипта в инспекторе - для дебагов метода 
 
         //дабы проверить что метод работает
@@ -214,6 +203,8 @@ namespace Runner
             _animator.SetTrigger(Fall);
             OnDie?.Invoke();
             _birdparticles.Play();
+            
+            _gamePanelFile.OopsifDie();
         }
 
 
@@ -224,32 +215,18 @@ namespace Runner
             _animator.SetTrigger(Dance);
             Dobezal?.Invoke();
         }
-
-        //------- NEW тэээк мы тут передаём int - который есть поле внутри конфига, приделанного к данному
-        // геймобджекту
         
-        // private int GotaCoin(CoinComponent coin)
-        // {
-        //     CoinConfig whichcoincollected = ScriptableObject.CreateInstance<CoinConfig>();
-        //     GetCoin?.Invoke(coin);
-        //     Debug.Log(coin.gameObject.name);
-        //     thisCoinPrice = whichcoincollected.PointNumber;
-        //     return thisCoinPrice;
-        // }
-        
-        // было до конфигов:
+        // ---------- было до конфигов: ------------
         // private void GotaCoin(CoinComponent coin)
         // {
         //     GetCoin?.Invoke(coin);
-        //     
         // }
-        
-        
+
         private void GotaCoin(CoinComponent coin)
         {
-            GetCoin?.Invoke(coin);
-            // priceToAdd += coin.thisCoinPrice; // оно же + coin.thisCoinPrice
-            GetMoney?.Invoke(coin.thisCoinPrice);
+            GetMoney?.Invoke(coin.thisCoinPrice); // передает цену взятой монеты в MoneyCounter
+            
+            GetCoin?.Invoke(coin); // а ПОТОМ ее убирает в CoinComponent
         }
     }
 }
