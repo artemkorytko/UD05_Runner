@@ -37,7 +37,7 @@ namespace Runner.Lesson21
         // }
     }
 
-    [Serializable]
+    [System.Serializable]
     public class RandomItem
     {
         [SerializeField] private int weigth; // вес item это (чем больше тем и важнее значимость выпадения этого префаба)
